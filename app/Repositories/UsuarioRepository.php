@@ -4,7 +4,7 @@ namespace App\Repositories;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Aluno;
 
-class AlunoRepository
+class UsuarioRepository
 {
     public function create(array $data): Aluno
     {
