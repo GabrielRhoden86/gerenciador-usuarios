@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreAlunoRequest;
+use App\Http\Requests\StoreUsuarioRequest;
 use App\Http\Requests\UpdateAlunoRequest;
 use App\Http\Requests\FiltroAlunoRequest;
 use App\Services\UsuarioService;
@@ -16,7 +16,7 @@ class AlunoController extends Controller
     {
         $this->usuarioService = $usuarioService;
     }
-    public function criarUsuario(StoreAlunoRequest $request)
+    public function criarUsuario(StoreUsuarioRequest $request)
     {
         try {
             $usuario = $this->usuarioService->criarUsuario($request->validated());
@@ -27,7 +27,7 @@ class AlunoController extends Controller
         }
     }
 
-  public function aditarAluno(UpdateAlunoRequest $request, int $id)
+    public function aditarAluno(UpdateAlunoRequest $request, int $id)
     {
         try {
             $usuario = $this->usuarioService->aditarAluno($request->validated(), $id);
@@ -41,6 +41,8 @@ class AlunoController extends Controller
 
     public function listarUsuarios(FiltroAlunoRequest $request)
     {
+
+
         try {
             $usuario = $this->usuarioService->listarUsuarios($request->all());
             return response()->json(['message' => 'Usuários listados sucesso!', 'data' => $usuario], 200);

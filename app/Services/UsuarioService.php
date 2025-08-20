@@ -20,50 +20,40 @@ class UsuarioService
     }
     public function criarUsuario(array $dados)
     {
+
         try {
-            $usuarioAutenticado = Auth::user();
-            $nomeExecutor = $usuarioAutenticado->name;
-            Log::info("Novo usuário cadastrado com sucesso pelo {$nomeExecutor}" );
-            return $this->usuarioRepository->create(data: $dados);
+
+            // $dados['password'] = bcrypt($dados['password']);
+
+            $usuario = $this->usuarioRepository->create(data: $dados);
+            Log::info("Novo usuário cadastrado com sucesso", ['id' => $usuario->id]);
+            return $usuario;
         } catch (Throwable $e) {
-            Log::error('Erro ao cadastrar aluno - service: ' . $e->getMessage());
+            Log::error('Erro ao cadastrar usuário - service: ' . $e->getMessage());
             throw $e;
         }
     }
     public function aditarAluno(array $dados, int $id)
     {
         try {
-            $aluno = $this->usuarioRepository->findById($id);
-            $nomeAluno = $aluno->nome;
-            $alunoId = $aluno->id;
-
+            $usuario = $this->usuarioRepository->findById($id);
+            $nomeUsuario = $usuario->nome;
+            $usuarioId = $usuario->id;
             $usuarioAutenticado = Auth::user();
             $emailUsuarioAutenticado = $usuarioAutenticado->name;
+
             if (isset($dados['status']) && $usuarioAutenticado->perfil === Perfil::FUNCIONARIO->value) {
-                return response()->json(['message' =>
-                 'Funcionários não têm permissão para alterar o status do aluno.'], 403);
+                return response()->json([
+                    'message' => 'Funcionários não têm permissão para alterar o status do aluno.'
+                ], 403);
             }
-            $alunoAtualizado = $this->usuarioRepository->update($dados, $id);
-            // $statusAnterior = $aluno->status;
-            // $statusNovo = $alunoAtualizado->status;
 
-            // $dadosNotificacao = [
-            //     "nomeAluno" => $nomeAluno,
-            //     "alunoId" => $alunoId,
-            //     "statusAnterior" => $statusAnterior,
-            //     "statusNovo" => $statusNovo,
-            //     "emailUsuario" => $emailUsuarioAutenticado
-            // ];
-
-            // if ($statusAnterior !== $statusNovo && in_array($statusNovo, ['Aprovado', 'Cancelado'])) {
-            //       $this->notificacaoService->notificarGestorAlteracaoStatus($dadosNotificacao);
-            // }
-
-            Log::info("Dados do usuário {$nomeAluno} editado pelo {$emailUsuarioAutenticado} com sucesso!");
-            return $alunoAtualizado;
+            $usuarioAtualizado = $this->usuarioRepository->update($dados, $id);
+            Log::info("Dados do usuário {$nomeUsuario} (ID: {$usuarioId}) editados com sucesso por {$emailUsuarioAutenticado}.");
+            return $usuarioAtualizado;
 
         } catch (Throwable $e) {
-            Log::error('Erro ao atualizar aluno - service: ' . $e->getMessage());
+            Log::error("Erro ao atualizar aluno (ID: {$id}) - service: " . $e->getMessage());
             throw $e;
         }
     }

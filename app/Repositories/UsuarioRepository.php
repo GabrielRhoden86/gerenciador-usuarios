@@ -3,12 +3,13 @@
 namespace App\Repositories;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Aluno;
+use App\Models\User;
 
 class UsuarioRepository
 {
-    public function create(array $data): Aluno
+    public function create(array $data): User
     {
-        return Aluno::create($data);
+        return User::create($data);
     }
 
     public function update( array $data, int $id): Aluno
@@ -20,23 +21,15 @@ class UsuarioRepository
 
     public function findAll(array $filtros = []): Collection
     {
-        return Aluno::query()
-            ->when(!empty($filtros['nome']), fn($query) =>
-                $query->where('nome', 'like', '%' . $filtros['nome'] . '%'))
-
-            ->when(!empty($filtros['cpf']), fn($query) =>
-                $query->where('cpf', $filtros['cpf']))
-
-            ->when(!empty($filtros['data_nascimento']), fn($query) =>
-                $query->whereDate('data_nascimento', $filtros['data_nascimento']))
-
-            ->when(!empty($filtros['turma']), fn($query) =>
-                $query->where('turma', $filtros['turma']))
-
-            ->when(!empty($filtros['status']), fn($query) =>
-                $query->where('status', $filtros['status']))
+        return User::query()
+            ->select('name', 'email')
+            ->when(!empty($filtros['name']), fn($query) =>
+                $query->where('name', 'like', '%' . $filtros['name'] . '%'))
+            ->when(!empty($filtros['email']), fn($query) =>
+                $query->where('email', $filtros['email']))
             ->get();
     }
+
 
     public function findById($id): Aluno
     {
