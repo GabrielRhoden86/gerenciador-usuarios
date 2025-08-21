@@ -26,7 +26,7 @@ class StoreUsuarioRequest extends FormRequest
         ];
     }
 
-        public function messages(): array
+    public function messages(): array
         {
             return [
                 'name.required'     => 'O campo nome é obrigatório.',

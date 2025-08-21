@@ -14,4 +14,5 @@ Route::middleware(['auth:api'])->prefix('usuarios')
         Route::get('/listar', [UsuarioController::class, 'listarUsuarios']);
         Route::delete('/excluir/{id}', [UsuarioController::class, 'excluirUsuario']);
         Route::get('/buscar/{id}', [UsuarioController::class, 'buscarUsuario']);
+
     });

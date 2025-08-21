@@ -2,37 +2,30 @@
 
 namespace App\Services;
 use Throwable;
-use App\Enums\Perfil;
+use App\Enums\PerfilUsuario;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\UsuarioRepository;
 use App\Services\NotificacaoService;
 use App\Models\User;
 
+
 class UsuarioService
 {    protected UsuarioRepository $usuarioRepository;
     protected NotificacaoService $notificacaoService;
-    protected User $usuarioAutenticado;
+
 
     public function __construct(
         UsuarioRepository $usuarioRepository,
         NotificacaoService $notificacaoService,
-        User $usuarioAutenticado
+
     ) {
         $this->usuarioRepository = $usuarioRepository;
         $this->notificacaoService = $notificacaoService;
-        $this->usuarioAutenticado = $usuarioAutenticado;
     }
     public function cadastrarUsuario(array $dados)
     {
         try {
-
-          if ($this->usuarioAutenticado->role_id === Perfil::USUARIO_PADRAO->value) {
-            Log::warning('Tentativa de cadastro de usuário sem permissão', [
-                'usuario_id' => $this->usuarioAutenticado->id,
-                'dados' => $dados
-            ]);
-             }
             $usuario = $this->usuarioRepository->create(data: $dados);
             Log::info("Novo usuário cadastrado com sucesso", ['id' => $usuario->id]);
             return $usuario;
@@ -44,19 +37,13 @@ class UsuarioService
     public function editarUsuario(array $dados, int $id)
     {
         try {
-            $usuario = $this->usuarioRepository->findById($id);
-            $nomeUsuario = $usuario->nome;
-            $usuarioId = $usuario->id;
-            $emailUsuarioAutenticado = $this->usuarioAutenticado->name;
 
-            if ($this->usuarioAutenticado->role_id === Perfil::USUARIO_PADRAO->value) {
-                return response()->json([
-                    'message' => 'Você não têm permissão para alterar perfil do Usuário.'
-                ], 403);
-            }
+         if ($permissaoNegada = $this->verificarPermissaoUsuario()) return $permissaoNegada;
+            $usuario = $this->usuarioRepository->findById($id);
+            $usuarioNome = $usuario->nome;
 
             $usuarioAtualizado = $this->usuarioRepository->update($dados, $id);
-            Log::info("Dados do usuário {$nomeUsuario} (ID: {$usuarioId}) editados com sucesso por {$emailUsuarioAutenticado}.");
+            Log::info("Dados do usuário {$usuarioNome} editados com sucesso!.");
             return $usuarioAtualizado;
 
         } catch (Throwable $e) {
@@ -75,20 +62,13 @@ class UsuarioService
     }
     public function excluirUsuario(int $id)
     {
-        try {
-            $usuario = $this->usuarioRepository->findById($id);
-            $nomeUsuario = $usuario->name;
-            $usuarioAutenticado = Auth::user();
-            $emailUsuarioAutenticado = $usuarioAutenticado->name;
+       try {
 
-            if ($usuarioAutenticado->perfil === Perfil::USUARIO_PADRAO->value) {
-                return response()->json([
-                    'message' => 'Funcionários não têm permissão para excluir usuários.'
-                ], 403);
-            }
+            if ($permissaoNegada = $this->verificarPermissaoUsuario()) return $permissaoNegada;
 
+            // $usuario = User::findOrFail($id);
             $this->usuarioRepository->delete($id);
-            Log::info("Usuário {$nomeUsuario} excluído com sucesso por {$emailUsuarioAutenticado}.");
+            Log::info("Usuário  excluído com sucesso.");
         } catch (Throwable $e) {
             Log::error('Erro ao excluir usuário - service: ' . $e->getMessage());
             throw $e;
@@ -102,5 +82,16 @@ class UsuarioService
             Log::error('Erro ao buscar aluno - service: ' . $e->getMessage());
             throw $e;
         }
+    }
+
+    private function verificarPermissaoUsuario()
+    {
+        $usuarioAutenticado = Auth::user();
+        if ($usuarioAutenticado->role_id === PerfilUsuario::USUARIO_PADRAO->value) {
+            return response()->json([
+                'message' => 'Você não tem permissão para alterar o perfil do Usuário.'
+            ], 403);
+        }
+        return null;
     }
 }

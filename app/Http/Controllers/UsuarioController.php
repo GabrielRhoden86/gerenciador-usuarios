@@ -52,9 +52,9 @@ class UsuarioController extends Controller
 
     public function excluirUsuario(int $id)
     {
-        try {
+         try {
             $this->usuarioService->excluirUsuario($id);
-            return response()->json(['message' => 'Excluir usuários:'], 200);
+            return response()->json(['message' => 'Usuário excluído com sucesso!:'], 200);
         } catch (Throwable) {
             return response()->json(['message' => 'Erro interno ao excluir usuário.'],
              500);
