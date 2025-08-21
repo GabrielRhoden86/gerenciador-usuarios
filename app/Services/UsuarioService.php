@@ -7,20 +7,32 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\UsuarioRepository;
 use App\Services\NotificacaoService;
+use App\Models\User;
 
 class UsuarioService
-{
-    protected $usuarioRepository;
-    protected $notificacaoService;
+{    protected UsuarioRepository $usuarioRepository;
+    protected NotificacaoService $notificacaoService;
+    protected User $usuarioAutenticado;
 
-    public function __construct(UsuarioRepository $usuarioRepository, NotificacaoService $notificacaoService)
-    {
+    public function __construct(
+        UsuarioRepository $usuarioRepository,
+        NotificacaoService $notificacaoService,
+        User $usuarioAutenticado
+    ) {
         $this->usuarioRepository = $usuarioRepository;
         $this->notificacaoService = $notificacaoService;
+        $this->usuarioAutenticado = $usuarioAutenticado;
     }
     public function cadastrarUsuario(array $dados)
     {
         try {
+
+          if ($this->usuarioAutenticado->role_id === Perfil::USUARIO_PADRAO->value) {
+            Log::warning('Tentativa de cadastro de usuário sem permissão', [
+                'usuario_id' => $this->usuarioAutenticado->id,
+                'dados' => $dados
+            ]);
+             }
             $usuario = $this->usuarioRepository->create(data: $dados);
             Log::info("Novo usuário cadastrado com sucesso", ['id' => $usuario->id]);
             return $usuario;
@@ -35,12 +47,11 @@ class UsuarioService
             $usuario = $this->usuarioRepository->findById($id);
             $nomeUsuario = $usuario->nome;
             $usuarioId = $usuario->id;
-            $usuarioAutenticado = Auth::user();
-            $emailUsuarioAutenticado = $usuarioAutenticado->name;
+            $emailUsuarioAutenticado = $this->usuarioAutenticado->name;
 
-            if ($usuarioAutenticado->perfil === Perfil::FUNCIONARIO->value) {
+            if ($this->usuarioAutenticado->role_id === Perfil::USUARIO_PADRAO->value) {
                 return response()->json([
-                    'message' => 'Funcionários não têm permissão para alterar o status do aluno.'
+                    'message' => 'Você não têm permissão para alterar perfil do Usuário.'
                 ], 403);
             }
 
@@ -62,7 +73,6 @@ class UsuarioService
             throw $e;
         }
     }
-
     public function excluirUsuario(int $id)
     {
         try {

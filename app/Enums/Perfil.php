@@ -2,8 +2,10 @@
 
 namespace App\Enums;
 
-enum Perfil: string
+use Ramsey\Uuid\Type\Integer;
+
+enum Perfil: INT
 {
-    case GESTOR = 'gestor';
-    case FUNCIONARIO = 'funcionario';
+    case ADMIN = 1;
+    case USUARIO_PADRAO = 2;
 }

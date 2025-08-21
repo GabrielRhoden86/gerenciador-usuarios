@@ -31,7 +31,7 @@ class UsuarioController extends Controller
     {
         try {
             $usuario = $this->usuarioService->editarUsuario($request->validated(), $id);
-            return response()->json(['message' => 'Dados do usuário atualizado com sucesso!','data' => $usuario],
+            return response()->json(['message' => 'Atualização usuário:','data' => $usuario],
             200);
         } catch (Throwable) {
             return response()->json(['message' => 'Erro interno ao atualizar usuário.'],
@@ -43,7 +43,7 @@ class UsuarioController extends Controller
     {
         try {
             $usuario = $this->usuarioService->listarUsuarios($request->all());
-            return response()->json(['message' => 'Usuários listados sucesso!', 'data' => $usuario], 200);
+            return response()->json(['message' => 'Lista usuários:', 'data' => $usuario], 200);
         } catch (Throwable) {
             return response()->json(['message' => 'Erro interno ao listar usuários.'],
              500);
@@ -54,7 +54,7 @@ class UsuarioController extends Controller
     {
         try {
             $this->usuarioService->excluirUsuario($id);
-            return response()->json(['message' => 'Usuário excluído com sucesso!'], 200);
+            return response()->json(['message' => 'Excluir usuários:'], 200);
         } catch (Throwable) {
             return response()->json(['message' => 'Erro interno ao excluir usuário.'],
              500);
@@ -64,7 +64,7 @@ class UsuarioController extends Controller
     {
         try {
             $aluno = $this->usuarioService->buscaUsuario($id);
-                return response()->json(['message' => 'Busca realizada com sucesso!', 'data' => $aluno],
+                return response()->json(['message' => 'Busca usuários:', 'data' => $aluno],
                 200);
             } catch (Throwable) {
                 return response()->json(['message' => 'Nenhum aluno encontrado.'],

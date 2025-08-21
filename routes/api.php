@@ -6,7 +6,6 @@ use App\Http\Controllers\AuthController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/usuarios/cadastrar', [UsuarioController::class, 'cadastrarUsuario']);
-
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
 Route::middleware(['auth:api'])->prefix('usuarios')
