@@ -81,7 +81,7 @@ class UsuarioService
             $usuarioAutenticado = Auth::user();
             $emailUsuarioAutenticado = $usuarioAutenticado->name;
 
-            if ($usuarioAutenticado->perfil === Perfil::FUNCIONARIO->value) {
+            if ($usuarioAutenticado->perfil === Perfil::USUARIO_PADRAO->value) {
                 return response()->json([
                     'message' => 'Funcionários não têm permissão para excluir usuários.'
                 ], 403);
