@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Log;
 
-class FiltroAlunoRequest extends FormRequest
+class  FindUsuarioRequest extends FormRequest
 {
     public function authorize(): bool
     {

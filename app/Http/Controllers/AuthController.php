@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -27,4 +28,21 @@ class AuthController extends Controller
         ]);
   }
 
+ public function logout(Request $request)
+    {
+        try {
+            $token = $request->bearerToken();
+            if (!$token) {
+                return response()->json(['error' => 'Token não fornecido'], 400);
+            }
+            JWTAuth::setToken($token)->invalidate();
+            return response()->json([
+                'message' => 'Logout realizado com sucesso!'
+            ]);
+        } catch (JWTException $e) {
+            return response()->json([
+                'error' => 'Falha ao realizar logout, token inválido'
+            ], 500);
+        }
+    }
 }

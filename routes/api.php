@@ -1,14 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AlunoController;
+use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\AuthController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/usuarios/cadastrar', [UsuarioController::class, 'cadastrarUsuario']);
 
-Route::middleware(['auth:api'])->group(function () {
-    Route::post('/criar-usuario', action: [AlunoController::class, 'criarUsuario']);
-    Route::patch('/editar-aluno/{id}', [AlunoController::class, 'aditarAluno']);
-    Route::get('/listar-usuarios', [AlunoController::class, 'listarUsuarios']);
-    Route::get('/buscar-aluno/{id}', [AlunoController::class, 'buscarAluno']);
-});
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
+
+Route::middleware(['auth:api'])->prefix('usuarios')
+    ->group(function () {
+        Route::patch('/editar/{id}', [UsuarioController::class, 'editarUsuario']);
+        Route::get('/listar', [UsuarioController::class, 'listarUsuarios']);
+        Route::delete('/excluir/{id}', [UsuarioController::class, 'excluirUsuario']);
+        Route::get('/buscar/{id}', [UsuarioController::class, 'buscarUsuario']);
+    });

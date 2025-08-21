@@ -18,13 +18,9 @@ class UsuarioService
         $this->usuarioRepository = $usuarioRepository;
         $this->notificacaoService = $notificacaoService;
     }
-    public function criarUsuario(array $dados)
+    public function cadastrarUsuario(array $dados)
     {
-
         try {
-
-            // $dados['password'] = bcrypt($dados['password']);
-
             $usuario = $this->usuarioRepository->create(data: $dados);
             Log::info("Novo usuário cadastrado com sucesso", ['id' => $usuario->id]);
             return $usuario;
@@ -33,7 +29,7 @@ class UsuarioService
             throw $e;
         }
     }
-    public function aditarAluno(array $dados, int $id)
+    public function editarUsuario(array $dados, int $id)
     {
         try {
             $usuario = $this->usuarioRepository->findById($id);
@@ -42,7 +38,7 @@ class UsuarioService
             $usuarioAutenticado = Auth::user();
             $emailUsuarioAutenticado = $usuarioAutenticado->name;
 
-            if (isset($dados['status']) && $usuarioAutenticado->perfil === Perfil::FUNCIONARIO->value) {
+            if ($usuarioAutenticado->perfil === Perfil::FUNCIONARIO->value) {
                 return response()->json([
                     'message' => 'Funcionários não têm permissão para alterar o status do aluno.'
                 ], 403);
@@ -66,7 +62,29 @@ class UsuarioService
             throw $e;
         }
     }
-    public function buscarAluno(int $id)
+
+    public function excluirUsuario(int $id)
+    {
+        try {
+            $usuario = $this->usuarioRepository->findById($id);
+            $nomeUsuario = $usuario->name;
+            $usuarioAutenticado = Auth::user();
+            $emailUsuarioAutenticado = $usuarioAutenticado->name;
+
+            if ($usuarioAutenticado->perfil === Perfil::FUNCIONARIO->value) {
+                return response()->json([
+                    'message' => 'Funcionários não têm permissão para excluir usuários.'
+                ], 403);
+            }
+
+            $this->usuarioRepository->delete($id);
+            Log::info("Usuário {$nomeUsuario} excluído com sucesso por {$emailUsuarioAutenticado}.");
+        } catch (Throwable $e) {
+            Log::error('Erro ao excluir usuário - service: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+    public function buscaUsuario(int $id)
     {
         try {
             return $this->usuarioRepository->findById($id);

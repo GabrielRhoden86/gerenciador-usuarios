@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 use Illuminate\Database\Eloquent\Collection;
-use App\Models\Aluno;
 use App\Models\User;
 
 class UsuarioRepository
@@ -12,11 +11,11 @@ class UsuarioRepository
         return User::create($data);
     }
 
-    public function update( array $data, int $id): Aluno
+    public function update( array $data, int $id): User
     {
-        $aluno = Aluno::findOrFail($id);
-        $aluno->update($data);
-        return $aluno;
+        $usuario = User::findOrFail($id);
+        $usuario->update($data);
+        return $usuario;
     }
 
     public function findAll(array $filtros = []): Collection
@@ -30,9 +29,14 @@ class UsuarioRepository
             ->get();
     }
 
-
-    public function findById($id): Aluno
+    public function delete(int $id): void
     {
-        return Aluno::findOrFail($id);
+        $usuario = User::findOrFail($id);
+        $usuario->delete();
+    }
+
+    public function findById($id): User
+    {
+        return User::findOrFail($id);
     }
 }
