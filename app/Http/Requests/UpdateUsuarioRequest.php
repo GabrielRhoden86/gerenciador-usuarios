@@ -19,6 +19,7 @@ class UpdateUsuarioRequest extends FormRequest
         $userId = $this->route('id');
 
         return [
+            'id' => 'required|integer|exists:users,id',
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|string|email|max:255|unique:users,email,' . $userId,
             'role_id' => 'sometimes|integer|exists:roles,id',
@@ -41,6 +42,10 @@ class UpdateUsuarioRequest extends FormRequest
             'role_id.sometimes' => 'O campo role_id é opcional mas deve ser válido.',
             'role_id.integer' => 'O campo role_id deve ser um número inteiro.',
             'role_id.exists' => 'A role_id selecionada não existe.',
+
+            'id.required' => 'O campo id não existe ou é inválido!',
+            'id.integer'  => 'O id deve ser um número inteiro válido.',
+            'id.exists'   => 'O usuário informado não existe no sistema.',
         ];
     }
 
@@ -55,5 +60,14 @@ class UpdateUsuarioRequest extends FormRequest
             'message' => 'Erro de validação.',
             'errors' => $validator->errors(),
         ], 422));
+    }
+
+
+    //incluir o id da rota nos dados validados
+    public function validationData(): array
+    {
+        return array_merge($this->all(), [
+            'id' => $this->route('id'),
+        ]);
     }
 }

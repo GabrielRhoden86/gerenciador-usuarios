@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreUsuarioRequest;
 use App\Http\Requests\UpdateUsuarioRequest;
+use App\Http\Requests\DeleteUsuarioRequest;
 use App\Http\Requests\FindUsuarioRequest;
 use App\Services\UsuarioService;
 use Throwable;
-use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class UsuarioController extends Controller
 {
@@ -20,9 +21,9 @@ class UsuarioController extends Controller
     {
         try {
             $usuario = $this->usuarioService->cadastrarUsuario($request->validated());
-            return response()->json(['message' => 'Usuário cadastrado com sucesso!', 'data' =>  $usuario ], 201);
+            return response()->json(['message' => 'Usuário cadastrado', 'data' =>  $usuario ], 201);
         } catch (Throwable) {
-            return response()->json(['message' => 'Erro interno ao cadastrar usuário.',],
+            return response()->json(['message' => 'Erro ao cadastrar usuário.',],
              500);
         }
     }
@@ -50,13 +51,13 @@ class UsuarioController extends Controller
         }
     }
 
-    public function excluirUsuario(int $id)
+    public function excluirUsuario(DeleteUsuarioRequest $request, int $id)
     {
-         try {
-            $this->usuarioService->excluirUsuario($id);
-            return response()->json(['message' => 'Usuário excluído com sucesso!:'], 200);
+        try {
+           $usuario = $this->usuarioService->excluirUsuario ($request->validated(), $id);
+            return response()->json(['message' => 'Exclusão usuário:!','data' => $usuario], 200);
         } catch (Throwable) {
-            return response()->json(['message' => 'Erro interno ao excluir usuário.'],
+            return response()->json(['message' => 'Falha ao excluir usuário.'],
              500);
         }
     }

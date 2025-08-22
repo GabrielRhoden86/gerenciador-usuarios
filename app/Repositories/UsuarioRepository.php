@@ -26,13 +26,15 @@ class UsuarioRepository
                 $query->where('name', 'like', '%' . $filtros['name'] . '%'))
             ->when(!empty($filtros['email']), fn($query) =>
                 $query->where('email', $filtros['email']))
+             ->when(!empty($filtros['role_id']), fn($query) =>
+                $query->where('role_id', $filtros['role_id']))
             ->get();
     }
 
-    public function delete(int $id): void
+    public function delete(int $id)
     {
-        $usuario = User::findOrFail($id);
-        $usuario->delete();
+       $user = User::findOrFail($id);
+       return $user->delete();
     }
 
     public function findById($id): User
