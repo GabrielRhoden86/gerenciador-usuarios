@@ -21,9 +21,9 @@ class UsuarioController extends Controller
     {
         try {
             $usuario = $this->usuarioService->cadastrarUsuario($request->validated());
-            return response()->json(['message' => 'Usuário cadastrado', 'data' =>  $usuario ], 201);
+            return response()->json(['message' => 'Cadastro usuário:', 'data' =>  $usuario], 201);
         } catch (Throwable) {
-            return response()->json(['message' => 'Erro ao cadastrar usuário.',],
+            return response()->json(['message' => 'Erro ao cadastrar usuário.'],
              500);
         }
     }
@@ -55,7 +55,7 @@ class UsuarioController extends Controller
     {
         try {
            $usuario = $this->usuarioService->excluirUsuario ($request->validated(), $id);
-            return response()->json(['message' => 'Exclusão usuário:!','data' => $usuario], 200);
+            return response()->json(['message' => 'Exclusão usuário:','data' => $usuario], 200);
         } catch (Throwable) {
             return response()->json(['message' => 'Falha ao excluir usuário.'],
              500);

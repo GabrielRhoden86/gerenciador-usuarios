@@ -21,19 +21,21 @@ class UsuarioService
     public function cadastrarUsuario(array $dados)
     {
         try {
-             $permissaoNegada = $this->verificarPermissaoUsuario('alterar');
-              if($permissaoNegada){
-                return response()->json('Somente Administradores podem alterar perfil de usuários', 403);
+            $permissaoNegada = $this->verificarPermissaoUsuario('cadastrar');
+            if ($permissaoNegada) {
+                return response()->json('Somente Administradores podem cadastrar perfil de usuários', 403);
             }
-            $usuario = $this->usuarioRepository->create( $dados);
-            Log::info("Novo usuário cadastrado com sucesso", ['id' => $usuario->id]);
+            $usuarioAuth = Auth::user();
+            $dados['password'] = bcrypt(value: $dados['password']);
+            $usuario = $this->usuarioRepository->create($dados);
+            Log::info("Novo usuário cadastrado: {$usuario->id} pelo administrador " . $usuarioAuth->id . ".");
             return $usuario;
         } catch (Throwable $e) {
-            Log::error("Erro ao cadastrar usuário: " . json_encode($dados['nome']) . " " . $e->getMessage());
-
+            Log::error("Erro ao cadastrar usuário: " . json_encode($dados['name'] ?? null) . " - " . $e->getMessage());
             throw $e;
         }
     }
+
     public function editarUsuario(array $dados, int $id)
     {
         try {
@@ -41,8 +43,9 @@ class UsuarioService
               if($permissaoNegada){
                 return response()->json('Somente Administradores podem alterar perfil de usuários', 403);
             }
+            $usuarioAuth = Auth::user();
             $usuarioAtualizado = $this->usuarioRepository->update($dados, $id);
-            Log::info("Dados do usuário id: ".$id." editados com sucesso!.");
+            Log::info("Dados do usuário id: ".$id." editados com sucesso pelo: ".$usuarioAuth->id.".");
             return $usuarioAtualizado;
 
         } catch (Throwable $e) {
@@ -62,13 +65,14 @@ class UsuarioService
     public function excluirUsuario($request, int $id)
     {
         try {
-            $permissaoNegada = $this->verificarPermissaoUsuario('alterar');
-              if($permissaoNegada){
-                return response()->json('Somente Administradores podem alterar perfil de usuários', 403);
+            $permissaoNegada = $this->verificarPermissaoUsuario('excluir');
+            if($permissaoNegada){
+                return response()->json('Somente Administradores podem excluir usuários', 403);
             }
-             $usuario = $this->usuarioRepository->delete($id);
-             Log::info("Usuário id: ".$id." excluído com sucesso.");
-             return $usuario;
+             $usuarioAuth = Auth::user();
+             $usuarioExcluido = $this->usuarioRepository->delete($id);
+             Log::info("Usuário id: ".$id." excluído com sucesso pelo administrador: ".$usuarioAuth->id.".");
+            return $usuarioExcluido;
         } catch (Throwable $e) {
             Log::error('Erro ao excluir usuário ' . $e->getMessage());
             throw $e;
@@ -88,9 +92,8 @@ class UsuarioService
     {
         $usuarioAuth = Auth::user();
         if ($usuarioAuth->role_id === PerfilUsuario::USUARIO_PADRAO->value) {
-            // Log::warning(message: "Permissão negada: Usuário ID $usuarioAuth  tentou $acao o perfil de outro usuário.");
-        return response()->json(['message' => 'Erro interno ao atualizar usuário.']);
-
+            Log::warning(message: "Permissão negada: Usuário ID $usuarioAuth->id tentou $acao o perfil de outro usuário.");
+            return response()->json(["message' => 'Erro  ao ".$acao." atualizar usuário."]);
         }
     }
 }
