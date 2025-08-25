@@ -69,10 +69,10 @@ class UsuarioController extends Controller
              500);
         }
     }
-    public function buscaUsuario(int $id)
+    public function buscarUsuario(int $id)
     {
         try {
-            $aluno = $this->usuarioService->buscaUsuario($id);
+            $aluno = $this->usuarioService->buscarUsuario($id);
                 return response()->json(['message' => 'Busca usuários:', 'data' => $aluno],
                 200);
             } catch (Throwable) {

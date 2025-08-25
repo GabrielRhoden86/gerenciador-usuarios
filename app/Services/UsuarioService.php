@@ -56,17 +56,8 @@ class UsuarioService
             throw $e;
         }
     }
-    // public function listarUsuarios(array $filtros = [])
-    // {
-    //     try {
-    //         return $this->usuarioRepository->findAll($filtros);
-    //     } catch (Throwable $e) {
-    //         Log::error('Erro ao listar usuários' . $e->getMessage());
-    //         throw $e;
-    //     }
-    // }
 
-      public function listarUsuarios(array $filtros = [], int $perPage = 10)
+    public function listarUsuarios(array $filtros = [], int $perPage = 10)
     {
         try {
             return $this->usuarioRepository->findAll($filtros, $perPage);
@@ -91,7 +82,7 @@ class UsuarioService
             throw $e;
         }
     }
-    public function buscaUsuario(int $id)
+    public function buscarUsuario(int $id)
     {
         try {
             return $this->usuarioRepository->findById($id);
