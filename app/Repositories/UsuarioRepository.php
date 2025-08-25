@@ -34,19 +34,6 @@ class UsuarioRepository
             ->paginate($perPage);
     }
 
-
-    public function findAllFilters(array $filtros = [], int $perPage = 10): LengthAwarePaginator
-    {
-        return User::query()
-            ->select('id','name', 'email','role_id','created_at','updated_at')
-            ->when(!empty($filtros['name']), fn($query) =>
-                $query->where('name', 'like', '%' . $filtros['name'] . '%'))
-            ->when(!empty($filtros['email']), fn($query) =>
-                $query->where('email', $filtros['email']))
-             ->when(!empty($filtros['role_id']), fn($query) =>
-                $query->where('role_id', $filtros['role_id']))
-            ->paginate($perPage);
-    }
     public function delete(int $id)
     {
        $user = User::findOrFail($id);
