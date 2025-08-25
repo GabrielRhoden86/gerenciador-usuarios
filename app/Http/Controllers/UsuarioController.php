@@ -8,8 +8,7 @@ use App\Http\Requests\DeleteUsuarioRequest;
 use App\Http\Requests\FindUsuarioRequest;
 use App\Services\UsuarioService;
 use Throwable;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
+
 
 class UsuarioController extends Controller
 {

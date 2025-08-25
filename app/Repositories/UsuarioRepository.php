@@ -1,10 +1,7 @@
 <?php
 
 namespace App\Repositories;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
 class UsuarioRepository
