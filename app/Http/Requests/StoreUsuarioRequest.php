@@ -21,8 +21,6 @@ class StoreUsuarioRequest extends FormRequest
             'name' => 'required|string|max:255',
             'role_id' => 'required|integer|in:1,2',
             'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:6',
-
         ];
     }
 
@@ -33,8 +31,6 @@ class StoreUsuarioRequest extends FormRequest
                 'email.required'    => 'O campo e-mail é obrigatório.',
                 'email.email'       => 'O campo e-mail deve ser válido.',
                 'email.unique'      => 'O e-mail informado já está em uso.',
-                'password.required' => 'O campo senha é obrigatório.',
-                'password.min'      => 'A senha deve ter no mínimo 6 caracteres.',
                 'role_id.required'  => 'O campo perfil é obrigatório.',
                 'role_id.in'        => 'O perfil selecionado deve ser admin ou user.',
             ];

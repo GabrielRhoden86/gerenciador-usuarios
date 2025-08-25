@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\UsuarioRepository;
 use App\Services\NotificacaoService;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\User;
 
 
@@ -25,16 +27,17 @@ class UsuarioService
             if ($permissaoNegada) {
                 return response()->json('Somente Administradores podem cadastrar perfil de usuários', 403);
             }
-            $usuarioAuth = Auth::user();
-            $dados['password'] = bcrypt(value: $dados['password']);
+            if (empty($dados['password'])) {
+                $dados['password'] = Str::random(8);
+            }
+            $dados['password'] = Hash::make($dados['password']);
             $usuario = $this->usuarioRepository->create($dados);
-            Log::info("Novo usuário cadastrado: {$usuario->id} pelo administrador " . $usuarioAuth->id . ".");
             return $usuario;
         } catch (Throwable $e) {
             Log::error("Erro ao cadastrar usuário: " . json_encode($dados['name'] ?? null) . " - " . $e->getMessage());
             throw $e;
         }
-    }
+}
 
     public function editarUsuario(array $dados, int $id)
     {
@@ -53,10 +56,20 @@ class UsuarioService
             throw $e;
         }
     }
-    public function listarUsuarios(array $filtros = [])
+    // public function listarUsuarios(array $filtros = [])
+    // {
+    //     try {
+    //         return $this->usuarioRepository->findAll($filtros);
+    //     } catch (Throwable $e) {
+    //         Log::error('Erro ao listar usuários' . $e->getMessage());
+    //         throw $e;
+    //     }
+    // }
+
+      public function listarUsuarios(array $filtros = [], int $perPage = 10)
     {
         try {
-            return $this->usuarioRepository->findAll($filtros);
+            return $this->usuarioRepository->findAll($filtros, $perPage);
         } catch (Throwable $e) {
             Log::error('Erro ao listar usuários' . $e->getMessage());
             throw $e;

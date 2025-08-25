@@ -21,10 +21,16 @@ class AuthController extends Controller
             return response()->json(['error' => 'Credenciais inválidas'], 401);
         }
 
+        $user = auth('api')->user();
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 2440
+            'expires_in' => auth('api')->factory()->getTTL() * 2440,
+                'user' => [
+                'name' => $user->name,
+                'permissao' => $user->role_id
+                ],
         ]);
   }
 
