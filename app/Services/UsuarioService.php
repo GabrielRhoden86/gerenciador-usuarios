@@ -20,42 +20,55 @@ class UsuarioService
         $this->usuarioRepository = $usuarioRepository;
         $this->notificacaoService = $notificacaoService;
     }
-    public function cadastrarUsuario(array $dados)
+
+   public function cadastrarUsuario(array $dados)
     {
         try {
             $permissaoNegada = $this->verificarPermissaoUsuario('cadastrar');
             if ($permissaoNegada) {
                 return response()->json('Somente Administradores podem cadastrar perfil de usuários', 403);
             }
+
             if (empty($dados['password'])) {
-                $dados['password'] = Str::random(8);
+                $provisionalPassword = Str::random(8);
+                $this->notificacaoService->notificarUsuarioSenhaProvisoria($dados['email'], $provisionalPassword);
+                $dados['password'] = $provisionalPassword;
             }
+
             $dados['password'] = Hash::make($dados['password']);
             $usuario = $this->usuarioRepository->create($dados);
+
             return $usuario;
         } catch (Throwable $e) {
             Log::error("Erro ao cadastrar usuário: " . json_encode($dados['name'] ?? null) . " - " . $e->getMessage());
             throw $e;
         }
-}
-
-    public function editarUsuario(array $dados, int $id)
-    {
-        try {
-            $permissaoNegada = $this->verificarPermissaoUsuario('alterar');
-              if($permissaoNegada){
-                return response()->json('Somente Administradores podem alterar perfil de usuários', 403);
-            }
-            $usuarioAuth = Auth::user();
-            $usuarioAtualizado = $this->usuarioRepository->update($dados, $id);
-            Log::info("Dados do usuário id: ".$id." editados com sucesso pelo: ".$usuarioAuth->id.".");
-            return $usuarioAtualizado;
-
-        } catch (Throwable $e) {
-            Log::error("Erro ao atualizar aluno (ID: {$id}) - service: " . $e->getMessage());
-            throw $e;
-        }
     }
+
+public function editarUsuario(array $dados, int $id)
+{
+    try {
+        $usuarioAuth = Auth::user();
+
+        if ($this->verificarPermissaoUsuario('alterar') && $id !== $usuarioAuth->id) {
+            Log::warning("Permissão negada: Usuário ID {$usuarioAuth->id} tentou alterar o perfil do usuário ID {$id}.");
+            return response()->json('Somente Administradores podem alterar perfis de outros usuários.', 403);
+        }
+        if (isset($dados['password']) && !empty($dados['password'])) {
+            $dados['password'] = Hash::make($dados['password']);
+        } else {
+            unset($dados['password']);
+        }
+
+        $usuarioAtualizado = $this->usuarioRepository->update($dados, $id);
+        Log::info("Dados do usuário ID: ".$id." editados com sucesso pelo usuário ID: ".$usuarioAuth->id.".");
+        return $usuarioAtualizado;
+
+    } catch (Throwable $e) {
+        Log::error("Erro ao atualizar usuário (ID: {$id}) - service: " . $e->getMessage());
+        throw $e;
+    }
+}
 
     public function listarUsuarios(array $filtros = [], int $perPage = 10)
     {
@@ -91,13 +104,9 @@ class UsuarioService
             throw $e;
         }
     }
-
-    private function verificarPermissaoUsuario($acao)
+   private function verificarPermissaoUsuario($acao): bool
     {
-        $usuarioAuth = Auth::user();
-        if ($usuarioAuth->role_id === PerfilUsuario::USUARIO_PADRAO->value) {
-            Log::warning(message: "Permissão negada: Usuário ID $usuarioAuth->id tentou $acao o perfil de outro usuário.");
-            return response()->json(["message' => 'Erro  ao ".$acao." atualizar usuário."]);
-        }
+      $usuarioAuth = Auth::user();
+      return $usuarioAuth->role_id === PerfilUsuario::USUARIO_PADRAO->value;
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Services;
 
 use App\Mail\StatusAlteradoMail;
@@ -8,16 +7,10 @@ use Illuminate\Support\Facades\Log;
 
 class NotificacaoService
 {
-    public function notificarGestorAlteracaoStatus(array $dadosNotificacao): void
+    public function notificarUsuarioSenhaProvisoria(string $userEmail, string $provisionalPassword): void
     {
-        $nomeAluno      = $dadosNotificacao['nomeAluno'];
-        $alunoId        = $dadosNotificacao['alunoId'];
-        $statusAnterior = $dadosNotificacao['statusAnterior'];
-        $statusNovo     = $dadosNotificacao['statusNovo'];
-        $emailDestino   = $dadosNotificacao['emailUsuario']; 
-
-        Mail::to($emailDestino)
-            ->send(new StatusAlteradoMail($nomeAluno, $alunoId, $statusAnterior, $statusNovo));
-        Log::info("Notificação para gestor: Aluno [ID {$alunoId} - {$nomeAluno}] teve o status alterado de '{$statusAnterior}' para '{$statusNovo}'.");
+        Mail::to($userEmail)
+            ->send(new StatusAlteradoMail($provisionalPassword, $userEmail));
+        Log::info("Senha provisória enviada para: " . $userEmail);
     }
 }

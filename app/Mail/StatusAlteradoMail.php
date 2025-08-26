@@ -10,22 +10,18 @@ class StatusAlteradoMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public int $alunoId;
-    public string $nomeAluno;
-    public string $statusAnterior;
-    public string $statusNovo;
+    public $provisionalPassword;
+    public $userEmail;
 
-    public function __construct(string $nomeAluno, int $alunoId, string $statusAnterior, string $statusNovo)
+    public function __construct(string $provisionalPassword, string $userEmail)
     {
-        $this->nomeAluno = $nomeAluno;
-        $this->alunoId = $alunoId;
-        $this->statusAnterior = $statusAnterior;
-        $this->statusNovo = $statusNovo;
+        $this->provisionalPassword = $provisionalPassword;
+        $this->userEmail = $userEmail;
     }
 
     public function build()
     {
-        return $this->subject("Status do Aluno #{$this->alunoId} Alterado")
+        return $this->subject("Sua Senha Provisória")
                     ->markdown('emails.status_alterado');
     }
 }

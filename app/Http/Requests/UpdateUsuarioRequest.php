@@ -14,17 +14,18 @@ class UpdateUsuarioRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
-    {
-        $userId = $this->route('id');
+  public function rules(): array
+{
+    $userId = $this->route('id');
 
-        return [
-            'id' => 'required|integer|exists:users,id',
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $userId,
-            'role_id' => 'sometimes|integer|exists:roles,id',
-        ];
-    }
+    return [
+        'id' => 'required|integer|exists:users,id',
+        'name' => 'sometimes|nullable|string|max:255',
+        'email' => 'sometimes|nullable|string|email|max:255|unique:users,email,' . $userId,
+        'role_id' => 'sometimes|nullable|integer|exists:roles,id',
+        'password' => 'sometimes|string|min:6|nullable',
+    ];
+}
 
     public function messages(): array
     {

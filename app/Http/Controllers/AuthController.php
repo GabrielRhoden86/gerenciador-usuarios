@@ -28,8 +28,8 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 2440,
                 'user' => [
+                 'id' => $user->id,
                 'name' => $user->name,
-                'permissao' => $user->role_id
                 ],
         ]);
   }

@@ -4,6 +4,7 @@ namespace App\Repositories;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use App\Models\User;
 
+
 class UsuarioRepository
 {
     public function create(array $data): User

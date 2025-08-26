@@ -8,6 +8,8 @@ use App\Http\Requests\DeleteUsuarioRequest;
 use App\Http\Requests\FindUsuarioRequest;
 use App\Services\UsuarioService;
 use Throwable;
+use Illuminate\Support\Facades\Log;
+
 
 
 class UsuarioController extends Controller
@@ -28,16 +30,13 @@ class UsuarioController extends Controller
              500);
         }
     }
-
     public function editarUsuario(UpdateUsuarioRequest $request, int $id)
     {
         try {
             $usuario = $this->usuarioService->editarUsuario($request->validated(), $id);
-            return response()->json(['message' => 'Atualização usuário:','data' => $usuario],
-            200);
+            return response()->json(['message' => 'Atualização usuário:','data' => $usuario], 200);
         } catch (Throwable) {
-            return response()->json(['erro' => 'Erro interno ao atualizar usuário.'],
-            500);
+            return response()->json(['erro' => 'Erro interno ao atualizar usuário.'], 500);
         }
     }
 

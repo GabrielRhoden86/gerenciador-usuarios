@@ -1,11 +1,14 @@
 @component('mail::message')
-# Notificação de Alteração de Status
+# Cadastro Concluído com Sucesso!!!
 
-Aluno {{ $nomeAluno }}, ID **{{ $alunoId }}** teve o status alterado.
+Olá,
 
-- Status anterior: {{ $statusAnterior }}
-- Novo status: {{ $statusNovo }}
+Sua conta foi criada. Por favor, use as informações abaixo para o seu primeiro acesso:
 
-<br>
+**E-mail:** {{ $userEmail }}
+**Senha Provisória:** {{ $provisionalPassword }}
+
+Você deve alterar sua senha após o primeiro login.
+
 {{ config('app.name') }}
 @endcomponent
