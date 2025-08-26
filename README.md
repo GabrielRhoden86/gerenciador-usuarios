@@ -1,4 +1,6 @@
 ⚙️ Configuração do Ambiente Local
+
+```bash
 1️⃣ Clone o repositório
 
 git clone https://github.com/GabrielRhoden86/gerenciador-usuarios
