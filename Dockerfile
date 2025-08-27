@@ -32,6 +32,9 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 # Copia a configuração do Supervisor
 COPY supervisord.conf /etc/supervisord.conf
 
+# Adiciona a nova configuração do Nginx
+COPY nginx.conf /etc/nginx/http.d/default.conf
+
 # Copia o entrypoint primeiro
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
