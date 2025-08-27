@@ -29,6 +29,7 @@ RUN docker-php-ext-install -j$(nproc) \
     zip \
     gd
 
+
 # Cria e ajusta as permissões dos diretórios para Nginx e PHP-FPM
 # Isso evita os erros de "Permission denied"
 RUN mkdir -p /var/lib/nginx /var/log/nginx /var/lib/nginx/tmp/client_body /run/php-fpm && \
@@ -40,9 +41,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
 # Define o diretório de trabalho principal
 WORKDIR /var/www/html
+RUN sed -i 's|^listen = .*|listen = /run/php-fpm/php-fpm.sock|' /usr/local/etc/php-fpm.d/www.conf
 
-# Copia a configuração do PHP-FPM para usar um socket
-RUN echo 'listen = /run/php-fpm/php-fpm.sock' >> /usr/local/etc/php-fpm.d/www.conf
 
 # Copia todos os arquivos do projeto para o contêiner
 COPY . .
