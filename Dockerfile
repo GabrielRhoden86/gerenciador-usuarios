@@ -51,7 +51,8 @@ COPY . .
 COPY supervisord.conf /etc/supervisord.conf
 COPY nginx.conf /etc/nginx/http.d/default.conf
 
-
+ENV SKIP_MIGRATIONS=true
+# Garante que o script de entrada tenha as permissões de execução
 RUN chmod +x docker-entrypoint.sh
 
 EXPOSE 8000
