@@ -55,6 +55,7 @@ ENV SKIP_MIGRATIONS=true
 # Garante que o script de entrada tenha as permissões de execução
 RUN chmod +x docker-entrypoint.sh
 
+ENV PORT=8000
 EXPOSE 8000
 
 # O comando final que inicia o Supervisor
