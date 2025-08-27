@@ -15,6 +15,7 @@ php artisan cache:clear
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
+php artisan make:seeder UserSeeder
 php artisan optimize:clear
 
 echo "🚀 Iniciando Laravel na porta \$PORT..."
