@@ -32,14 +32,18 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 # Copia a configuração do Supervisor
 COPY supervisord.conf /etc/supervisord.conf
 
-# Adiciona permissão de execução ao script
-RUN chmod +x docker-entrypoint.sh
+# Copia o entrypoint primeiro
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+# Dá permissão de execução ao entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 WORKDIR /var/www/html
 
+# Copia o restante do código
 COPY . .
 
 EXPOSE 8000
 
 # O Dockerfile agora executa o script que inicia o Supervisor
-CMD ["sh", "docker-entrypoint.sh"]
+CMD ["sh", "/usr/local/bin/docker-entrypoint.sh"]
