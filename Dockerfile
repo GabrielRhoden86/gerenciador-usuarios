@@ -61,6 +61,4 @@ EXPOSE $PORT
 # O comando final que inicia o Supervisor
 
 
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-CMD ["sh", "/start.sh"]
+    CMD ["./docker-entrypoint.sh"]
