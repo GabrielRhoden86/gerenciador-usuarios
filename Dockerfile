@@ -14,7 +14,7 @@ RUN apk add --no-cache \
     mysql-client \
     postgresql-dev
 
-RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql
+RUN docker-php-ext-install pdo pdo_mysql
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
