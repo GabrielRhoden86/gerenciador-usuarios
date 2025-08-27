@@ -3,6 +3,8 @@ set -e
 
 echo "📦 Instalando dependências do Composer..."
 composer install --no-dev --optimize-autoloader
+sed -i "s|listen \${PORT}|listen ${PORT}|g" /etc/nginx/http.d/default.conf
+
 
 echo "🔑 Ajustando permissões..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
