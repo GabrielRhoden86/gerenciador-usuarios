@@ -59,4 +59,8 @@ ARG PORT=10000
 ENV PORT=$PORT
 EXPOSE $PORT
 # O comando final que inicia o Supervisor
-CMD ["./docker-entrypoint.sh"]
+
+
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+CMD ["sh", "/start.sh"]
