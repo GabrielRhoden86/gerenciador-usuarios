@@ -28,6 +28,7 @@ RUN docker-php-ext-install -j$(nproc) \
 
 # Copia o Composer para o contêiner
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+RUN echo 'listen = /run/php-fpm/php-fpm.sock' >> /usr/local/etc/php-fpm.d/www.conf
 
 # Copia a configuração do Supervisor
 COPY supervisord.conf /etc/supervisord.conf
