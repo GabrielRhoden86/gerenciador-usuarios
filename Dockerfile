@@ -1,9 +1,6 @@
 FROM php:8.2-fpm-alpine
 
-# Cria usuário www-data (caso não exista no Alpine)
-RUN adduser -D -g '' www-data
-
-# Instala dependências do sistema
+# Instala as dependências do sistema
 RUN apk add --no-cache \
     nginx \
     supervisor \
@@ -23,7 +20,7 @@ RUN apk add --no-cache \
     postgresql-dev \
     dos2unix
 
-# Instala extensões do PHP
+# Instala as extensões do PHP
 RUN docker-php-ext-install -j$(nproc) \
     pdo pdo_mysql pdo_sqlite \
     curl \
@@ -32,32 +29,32 @@ RUN docker-php-ext-install -j$(nproc) \
     zip \
     gd
 
-# Cria e ajusta permissões para nginx/php-fpm
-RUN mkdir -p /var/lib/nginx /var/log/nginx /var/lib/nginx/tmp/client_body /run/php-fpm \
- && chown -R www-data:www-data /var/lib/nginx /var/log/nginx /run/php-fpm \
- && chmod -R 755 /var/lib/nginx /var/log/nginx /run/php-fpm
+# Cria e ajusta as permissões dos diretórios para Nginx e PHP-FPM
+# Isso evita os erros de "Permission denied"
+RUN mkdir -p /var/lib/nginx /var/log/nginx /var/lib/nginx/tmp/client_body /run/php-fpm && \
+    chown -R www-data:www-data /var/lib/nginx /var/log/nginx /run/php-fpm && \
+    chmod -R 755 /var/lib/nginx /var/log/nginx /run/php-fpm
 
-# Copia o Composer
+# Copia o Composer para o contêiner
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
-# Define diretório de trabalho
+# Define o diretório de trabalho principal
 WORKDIR /var/www/html
 
-# Copia projeto
+# Copia a configuração do PHP-FPM para usar um socket
+RUN echo 'listen = /run/php-fpm/php-fpm.sock' >> /usr/local/etc/php-fpm.d/www.conf
+
+# Copia todos os arquivos do projeto para o contêiner
 COPY . .
 
-# Copia configs do supervisor e nginx
+# Copia a configuração do Supervisor e do Nginx
 COPY supervisord.conf /etc/supervisord.conf
 COPY nginx.conf /etc/nginx/http.d/default.conf
 
-# Copia o entrypoint para binários do container
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
-# Ajusta permissões do entrypoint (garante formato UNIX também)
-RUN dos2unix /usr/local/bin/docker-entrypoint.sh \
- && chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x docker-entrypoint.sh
 
 EXPOSE 8000
 
-# Comando de entrada
-CMD ["docker-entrypoint.sh"]
+# O comando final que inicia o Supervisor
+CMD ["./docker-entrypoint.sh"]
