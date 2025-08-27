@@ -3,8 +3,6 @@ set -e
 
 echo "📦 Instalando dependências do Composer..."
 composer install --no-dev --optimize-autoloader
-sed -i "s|listen \${PORT}|listen ${PORT}|g" /etc/nginx/http.d/default.conf
-
 
 echo "🔑 Ajustando permissões..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
@@ -19,5 +17,5 @@ php artisan route:clear
 php artisan view:clear
 php artisan optimize:clear
 
-echo "🚀 Iniciando Supervisor..."
-exec /usr/bin/supervisord -c /etc/supervisord.conf
+echo "🚀 Iniciando Laravel na porta \$PORT..."
+exec php -S 0.0.0.0:${PORT:-8080} -t public
