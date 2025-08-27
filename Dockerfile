@@ -1,6 +1,9 @@
 FROM php:8.2-fpm-alpine
 
-# Instala as dependências do sistema
+# Cria usuário www-data (caso não exista no Alpine)
+RUN adduser -D -g '' www-data
+
+# Instala dependências do sistema
 RUN apk add --no-cache \
     nginx \
     supervisor \
@@ -20,7 +23,7 @@ RUN apk add --no-cache \
     postgresql-dev \
     dos2unix
 
-# Instala as extensões do PHP
+# Instala extensões do PHP
 RUN docker-php-ext-install -j$(nproc) \
     pdo pdo_mysql pdo_sqlite \
     curl \
@@ -29,34 +32,32 @@ RUN docker-php-ext-install -j$(nproc) \
     zip \
     gd
 
-# Cria e ajusta as permissões dos diretórios para Nginx e PHP-FPM
-# Isso evita os erros de "Permission denied"
-RUN mkdir -p /var/lib/nginx /var/log/nginx /var/lib/nginx/tmp/client_body /run/php-fpm && \
-    chown -R www-data:www-data /var/lib/nginx /var/log/nginx /run/php-fpm && \
-    chmod -R 755 /var/lib/nginx /var/log/nginx /run/php-fpm
+# Cria e ajusta permissões para nginx/php-fpm
+RUN mkdir -p /var/lib/nginx /var/log/nginx /var/lib/nginx/tmp/client_body /run/php-fpm \
+ && chown -R www-data:www-data /var/lib/nginx /var/log/nginx /run/php-fpm \
+ && chmod -R 755 /var/lib/nginx /var/log/nginx /run/php-fpm
 
-# Copia o Composer para o contêiner
+# Copia o Composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
-# Define o diretório de trabalho principal
+# Define diretório de trabalho
 WORKDIR /var/www/html
 
-# Copia a configuração do PHP-FPM para usar um socket
-COPY www.conf /usr/local/etc/php-fpm.d/www.conf
-# ou
-# RUN echo 'listen = /run/php-fpm/php-fpm.sock' >> /usr/local/etc/php-fpm.d/www.conf
-
-# Copia todos os arquivos do projeto para o contêiner
+# Copia projeto
 COPY . .
 
-# Copia a configuração do Supervisor e do Nginx
+# Copia configs do supervisor e nginx
 COPY supervisord.conf /etc/supervisord.conf
 COPY nginx.conf /etc/nginx/http.d/default.conf
 
-# Garante que o script de entrada tenha as permissões de execução
-RUN chmod +x docker-entrypoint.sh
+# Copia o entrypoint para binários do container
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+# Ajusta permissões do entrypoint (garante formato UNIX também)
+RUN dos2unix /usr/local/bin/docker-entrypoint.sh \
+ && chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 8000
 
-# O comando final que inicia o Supervisor
-CMD ["./docker-entrypoint.sh"]
+# Comando de entrada
+CMD ["docker-entrypoint.sh"]
