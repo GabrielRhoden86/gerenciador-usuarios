@@ -7,6 +7,7 @@ RUN apk add --no-cache \
     supervisor \
     openssl \
     curl \
+    curl-dev \
     libxml2-dev \
     libzip-dev \
     oniguruma-dev \
