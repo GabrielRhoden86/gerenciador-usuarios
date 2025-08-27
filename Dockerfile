@@ -33,11 +33,17 @@ RUN docker-php-ext-install -j$(nproc) \
 # Copia o Composer para o contêiner
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
+# Copia a configuração do Supervisor
+COPY supervisord.conf /etc/supervisord.conf
+
+# Adiciona permissão de execução ao script
+RUN chmod +x docker-entrypoint.sh
+
 WORKDIR /var/www/html
 
 COPY . .
 
 EXPOSE 8000
 
-# Comando de inicialização
+# O Dockerfile agora executa o script que inicia o Supervisor
 CMD ["sh", "docker-entrypoint.sh"]
