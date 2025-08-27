@@ -1,28 +1,21 @@
 #!/bin/sh
+set -e
 
-
-if command -v dos2unix >/dev/null 2>&1; then
-    dos2unix "$0"
-fi
-
-
-echo "Instalando dependências do Composer..."
+echo "📦 Instalando dependências do Composer..."
 composer install --no-dev --optimize-autoloader
 
+echo "🔑 Ajustando permissões..."
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-echo "Concedendo permissões para as pastas 'storage' e 'bootstrap/cache'..."
-chown -R www-data:www-data /var/www/html/storage
-chown -R www-data:www-data /var/www/html/bootstrap/cache
+echo "🗄️ Executando migrações..."
+php artisan migrate --force || true
 
-
-echo "Executando migrações do banco de dados..."
-php artisan migrate --force
-
-
-echo "Limpando caches do Laravel..."
+echo "🧹 Limpando caches do Laravel..."
 php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
 php artisan optimize:clear
 
-
-echo "Iniciando Supervisor..."
+echo "🚀 Iniciando Supervisor..."
 exec /usr/bin/supervisord -c /etc/supervisord.conf
