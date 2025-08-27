@@ -18,7 +18,6 @@ RUN apk add --no-cache \
     sqlite-dev \
     mysql-client \
     postgresql-dev \
-    # Adiciona a ferramenta 'dos2unix' para evitar problemas de quebra de linha
     dos2unix
 
 # Instala as extensões do PHP
@@ -30,23 +29,22 @@ RUN docker-php-ext-install -j$(nproc) \
     zip \
     gd
 
-# Cria e ajusta as permissões para os diretórios do Nginx e PHP-FPM
+# Cria e ajusta as permissões dos diretórios para Nginx e PHP-FPM
 # Isso evita os erros de "Permission denied"
-RUN mkdir -p /var/lib/nginx/logs /var/lib/nginx/tmp/client_body && \
-    chown -R www-data:www-data /var/lib/nginx && \
-    chmod -R 755 /var/lib/nginx && \
-    mkdir -p /run/php-fpm && \
-    chown -R www-data:www-data /run/php-fpm && \
-    chmod -R 755 /run/php-fpm
-
-# Configura o PHP-FPM para usar um socket
-RUN echo 'listen = /run/php-fpm/php-fpm.sock' >> /usr/local/etc/php-fpm.d/www.conf
+RUN mkdir -p /var/lib/nginx /var/log/nginx /var/lib/nginx/tmp/client_body /run/php-fpm && \
+    chown -R www-data:www-data /var/lib/nginx /var/log/nginx /run/php-fpm && \
+    chmod -R 755 /var/lib/nginx /var/log/nginx /run/php-fpm
 
 # Copia o Composer para o contêiner
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
-# Define o diretório de trabalho
+# Define o diretório de trabalho principal
 WORKDIR /var/www/html
+
+# Copia a configuração do PHP-FPM para usar um socket
+COPY www.conf /usr/local/etc/php-fpm.d/www.conf
+# ou
+# RUN echo 'listen = /run/php-fpm/php-fpm.sock' >> /usr/local/etc/php-fpm.d/www.conf
 
 # Copia todos os arquivos do projeto para o contêiner
 COPY . .
@@ -55,7 +53,7 @@ COPY . .
 COPY supervisord.conf /etc/supervisord.conf
 COPY nginx.conf /etc/nginx/http.d/default.conf
 
-# Garante que o script de entrada tenha as permissões corretas
+# Garante que o script de entrada tenha as permissões de execução
 RUN chmod +x docker-entrypoint.sh
 
 EXPOSE 8000
