@@ -24,4 +24,5 @@ COPY . .
 
 EXPOSE 8000
 
+
 CMD ["sh", "docker-entrypoint.sh"]
