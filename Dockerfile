@@ -1,7 +1,5 @@
 FROM php:8.2-fpm-alpine
 
-# Instala as dependências do sistema usando APK
-# As dependências são agrupadas para uma construção mais eficiente.
 RUN apk add --no-cache \
     nginx \
     supervisor \
@@ -20,8 +18,6 @@ RUN apk add --no-cache \
     mysql-client \
     postgresql-dev
 
-# Instala as extensões do PHP de forma correta
-# O comando -j$(nproc) acelera a compilação.
 RUN docker-php-ext-install -j$(nproc) \
     pdo pdo_mysql pdo_sqlite \
     curl \
