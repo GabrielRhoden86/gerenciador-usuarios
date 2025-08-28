@@ -44,9 +44,8 @@ O sistema utiliza **JWT (JSON Web Tokens)** para autenticação:
 |--------|----------------------------|------------------------|
 | POST   | /login                     | Faz login no sistema   |
 
-Exemplo de acesso via ngrok:  
-https://d60b4f01eac0.ngrok-free.app/login
-
+Exemplo de acesso via netlify:  
+gerenciado-app.netlify.app
 
 ---
 
@@ -63,11 +62,8 @@ Todas essas rotas estão dentro do middleware `auth:api`:
 | GET     | /usuarios/buscar/{id}        | Buscar usuário por ID       |
 | POST    | /logout                      | Encerrar sessão do usuário  |
 
-Exemplo de acesso via ngrok:  
-https://d60b4f01eac0.ngrok-free.app/usuarios/listar
 
-
----
+--
 
 ## 🔹 Middleware
 
