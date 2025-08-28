@@ -26,7 +26,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-             'expires_in' => (int) env('JWT_TTL', 60) * 60,
+             'expires_in' => (int) config(key: 'jwt.ttl') * 60,
                 'user' => [
                  'id' => $user->id,
                 'name' => $user->name,
