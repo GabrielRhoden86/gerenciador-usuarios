@@ -100,13 +100,18 @@ Route::middleware(['auth:api'])->prefix('usuarios')
 
 ---
 
-### 🔹 URLs via ngrok
+# 📌 API Gerenciador de Usuários
 
-Durante o desenvolvimento, você pode acessar o sistema remotamente usando ngrok:
+Durante o desenvolvimento, você pode acessar o sistema remotamente:
 
-- **Login:** [https://d60b4f01eac0.ngrok-free.app/login](https://d60b4f01eac0.ngrok-free.app/login)  
-- **Listar usuários:** [https://d60b4f01eac0.ngrok-free.app/usuarios/listar](https://d60b4f01eac0.ngrok-free.app/usuarios/listar)  
-- **Cadastrar usuário:** [https://d60b4f01eac0.ngrok-free.app/usuarios/cadastrar](https://d60b4f01eac0.ngrok-free.app/usuarios/cadastrar)  
+- **Login:** [https://gerenciador-usuarios.onrender.com/api/login](https://gerenciador-usuarios.onrender.com/api/login)  
+- **Listar usuários:** [https://gerenciador-usuarios.onrender.com/api/usuarios/listar](https://gerenciador-usuarios.onrender.com/api/usuarios/listar)  
+- **Cadastrar usuário:** [https://gerenciador-usuarios.onrender.com/api/usuarios/cadastrar](https://gerenciador-usuarios.onrender.com/api/usuarios/cadastrar)  
+- **Editar usuário:** [https://gerenciador-usuarios.onrender.com/api/usuarios/editar/{id}](https://gerenciador-usuarios.onrender.com/api/usuarios/editar/1)  
+- **Excluir usuário:** [https://gerenciador-usuarios.onrender.com/api/usuarios/excluir/{id}](https://gerenciador-usuarios.onrender.com/api/usuarios/excluir/3)  
+- **Buscar usuário por ID:** [https://gerenciador-usuarios.onrender.com/api/usuarios/buscar/{id}](https://gerenciador-usuarios.onrender.com/api/usuarios/buscar/1)  
+- **Logout:** [https://gerenciador-usuarios.onrender.com/api/logout](https://gerenciador-usuarios.onrender.com/api/logout)  
+
 
 > Lembre-se de enviar o **JWT** no header `Authorization` para rotas protegidas.
 
