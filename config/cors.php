@@ -2,7 +2,12 @@
 
 return [
 
-    'paths' => ['api/*', 'login', 'logout', 'me', 'logout'],
+    'paths' => [
+        'api/*',
+        'login',
+        'logout',
+        'usuarios/*'
+    ],
 
     'allowed_methods' => ['*'],
 
