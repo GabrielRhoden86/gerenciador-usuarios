@@ -17,26 +17,32 @@ class  FindUsuarioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nome'   => 'sometimes|string|max:255',
-            'cpf'    => 'sometimes|string|size:11',
-            'turma'  => 'sometimes|string|max:100',
-            'status' => 'sometimes|string|in:Pendente,Aprovado,Cancelado',
+            'id' => 'sometimes|integer|max:255',
+            'name' => 'sometimes|max:255',
+            'email' => 'sometimes|max:255',
+            'role_id' => 'sometimes|nullable|integer|exists:roles,id',
+            'per_page' => 'sometimes|integer|min:1|max:100',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'cpf.size'        => 'O CPF deve conter exatamente 11 dígitos.',
-            'status.in'       => 'O status deve ser Pendente, Aprovado ou Cancelado.',
-            'nome.string'     => 'O nome deve ser uma string.',
-            'turma.string'    => 'A turma deve ser uma string.',
+            'id.string' => 'O id deve ser um número válido.',
+            'name.max' => 'O campo nome não pode ter mais que 255 caracteres.',
+            'email.string' => 'O email deve ser um texto válido.',
+            'email.max' => 'O e-mail não pode ultrapassar 255 caracteres.',
+            'role_id.integer' => 'O campo role_id deve ser um número inteiro.',
+            'role_id.exists' => 'A role_id selecionada não existe.',
+            'per_page.integer' => 'O valor de per_page deve ser um número.',
+            'per_page.min' => 'O valor mínimo de per_page é 1.',
+            'per_page.max' => 'O valor máximo de per_page é 100.',
         ];
     }
 
-    protected function failedValidation(Validator $validator)
+   protected function failedValidation(Validator $validator)
     {
-        Log::warning('Validação falhou no FiltroAlunoRequest', [
+        Log::warning('Validação falhou no FindUsuarioRequest', [
             'input' => $this->all(),
             'errors' => $validator->errors()->toArray(),
         ]);
@@ -46,4 +52,4 @@ class  FindUsuarioRequest extends FormRequest
             'errors' => $validator->errors(),
         ], 422));
     }
-}
+    }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreUsuarioRequest;
 use App\Http\Requests\UpdateUsuarioRequest;
@@ -10,72 +11,88 @@ use App\Services\UsuarioService;
 use Throwable;
 use Illuminate\Support\Facades\Log;
 
-
-
 class UsuarioController extends Controller
 {
     protected $usuarioService;
+
     public function __construct(UsuarioService $usuarioService)
     {
         $this->usuarioService = $usuarioService;
     }
-
     public function cadastrarUsuario(StoreUsuarioRequest $request)
     {
         try {
-            $usuario = $this->usuarioService->cadastrarUsuario($request->validated());
-            return response()->json(['message' => 'Cadastro usuário realizando com sucesso:', 'data'=>$usuario ], 201);
-        } catch (Throwable) {
-            return response()->json(['erro' => 'Erro ao cadastrar usuário.'],
-             500);
+            $dadosValidados = $request->validated();
+            $cadastro = $this->usuarioService->cadastrarUsuario($dadosValidados);
+            return response()->json([
+                'message' => $cadastro['message'],
+                'data' => $cadastro['data']
+            ]);
+        } catch (Throwable $e) {
+            $status = $e->getCode() > 0 ? $e->getCode() : 500;
+            return response()->json([
+                'message' => $e->getMessage()
+            ], status: $status);
         }
     }
     public function editarUsuario(UpdateUsuarioRequest $request, int $id)
     {
         try {
-            $usuario = $this->usuarioService->editarUsuario($request->validated(), $id);
-            return response()->json(['message' => 'Atualização usuário:','data' => $usuario], 200);
-        } catch (Throwable) {
-            return response()->json(['erro' => 'Erro interno ao atualizar usuário.'], 500);
+            $dadosValidados = $request->validated();
+            $atualizacao = $this->usuarioService->editarUsuario($dadosValidados, $id);
+
+            return response()->json([
+                'message' => $atualizacao['message'],
+                'data' => $atualizacao['data']
+            ]);
+        } catch (Throwable $e) {
+            return response()->json(['message' => $e->getMessage()],
+         $e->getCode() ?: 500);
         }
     }
-
     public function listarUsuarios(FindUsuarioRequest $request)
     {
-            try {
-                $perPage = $request->query('per_page', 10);
-                $usuarios = $this->usuarioService->listarUsuarios($request->all(), $perPage);
+        try {
+            $dadosValidados = $request->validated();
+            $perPage = $request->query('per_page', 10);
+            $usuarios = $this->usuarioService->listarUsuarios($dadosValidados, $perPage);
 
-                return response()->json([
-                    'message' => 'Lista de usuários:',
-                    'data' => $usuarios
-                ], 200);
-            } catch (Throwable) {
-                return response()->json([
-                    'erro' => 'Erro interno ao listar usuários.'
-                ], 500);
-            }
+              return response()->json([
+                'message' => $usuarios['message'],
+                'data' => $usuarios['data']
+            ]);
+          } catch (Throwable $e) {
+            return response()->json(['message' => $e->getMessage()],
+         $e->getCode() ?: 500);
+        }
     }
-
     public function excluirUsuario(DeleteUsuarioRequest $request, int $id)
     {
         try {
-           $usuario = $this->usuarioService->excluirUsuario ($request->validated(), $id);
-            return response()->json(['message' => 'Exclusão usuário:','data' => $usuario], 200);
-        } catch (Throwable) {
-            return response()->json(['erro' => 'Falha ao excluir usuário.'],
-             500);
+            $dadosValidados = $request->validated();
+            $usuarioExcluido = $this->usuarioService->excluirUsuario($dadosValidados, $id);
+
+          return response()->json([
+                'message' => $usuarioExcluido['message'],
+                'data' => $usuarioExcluido['data']
+            ]);
+         } catch (Throwable $e) {
+            return response()->json(
+            ['message' => $e->getMessage()],
+         $e->getCode() ?: 500);
         }
     }
     public function buscarUsuario(int $id)
     {
         try {
-            $aluno = $this->usuarioService->buscarUsuario($id);
-                return response()->json(['message' => 'Busca usuários:', 'data' => $aluno],
-                200);
-            } catch (Throwable) {
-                return response()->json(['erro' => 'Nenhum aluno encontrado.'],
-                 500);
-            }
+            $usuario = $this->usuarioService->buscarUsuario($id);
+            return response()->json([
+                'message' => $usuario['message'],
+                'data' => $usuario['data']
+            ]);
+            } catch (Throwable $e) {
+            return response()->json(['message' => $e->getMessage()],
+         $e->getCode() ?: 500);
+        }
     }
-  }
+}
