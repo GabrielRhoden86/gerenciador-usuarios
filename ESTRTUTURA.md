@@ -148,3 +148,8 @@ O JWT foi escolhido para autenticação por ser seguro, escalável e compatível
 - Sem necessidade de armazenamento de sessão no servidor.  
 - Permite expiração automática e renovação de tokens.  
 - Compatível com middleware de autenticação em Laravel (`auth:api`).  
+
+## Leia Também: 
+
+## Instalação do Projeto:
+[Instalação](README.md)

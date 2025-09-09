@@ -137,3 +137,9 @@ Laravel 12.x
 MySQL 10.4.32-MariaDB
 
 Composer 2.8.4
+
+## Leia Também: 
+
+## Estrutura do Projeto:
+[Estrutura do projeto](ESTRUTURA.md)
+Detalhes da estrutura do projeto
