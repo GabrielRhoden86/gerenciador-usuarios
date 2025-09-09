@@ -151,5 +151,5 @@ O JWT foi escolhido para autenticação por ser seguro, escalável e compatível
 
 ## Leia Também: 
 
-## Instalação do Projeto:
+## Instalação da API:
 [Instalação](README.md)

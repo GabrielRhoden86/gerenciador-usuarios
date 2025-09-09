@@ -140,6 +140,5 @@ Composer 2.8.4
 
 ## Leia Também: 
 
-## Estrutura do Projeto:
-[Estrutura do projeto](ESTRUTURA.md)
-Detalhes da estrutura do projeto
+## Estrutura da API:
+[Estrutura API](ESTRUTURA.md)
