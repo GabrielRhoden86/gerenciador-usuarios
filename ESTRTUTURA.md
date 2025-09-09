@@ -12,7 +12,7 @@ O projeto segue a arquitetura **Repository-Service-Controller**, separando respo
 - **Service**: contém a lógica de negócio do sistema, processa dados e interage com os repositórios.
 - **Repository**: faz a comunicação direta com o banco de dados (queries, Eloquent, etc).
 
-Exemplo de organização de pastas:
+Exemplo Repository Pattern:
 
 app/
 ├─ Http/
@@ -27,52 +27,45 @@ app/
 ---
 
 ## 🔹 Segurança
-
 O sistema utiliza **JWT (JSON Web Tokens)** para autenticação:
 
 - Ao fazer login (`POST /login`), o usuário recebe um token JWT.
 - Esse token deve ser enviado no header `Authorization: Bearer <token>` para acessar rotas protegidas.
 - O middleware `auth:api` protege todas as rotas de usuários.
-
 ---
 
-## 🔹 Rotas do Projeto
+## 🔹 Rota de autenticação
 
-### Rotas Públicas
-
+```bash
 | Método | URL                         | Descrição               |
 |--------|----------------------------|------------------------|
 | POST   | /login                     | Faz login no sistema   |
+```
 
-Exemplo de acesso via netlify:  
-gerenciado-app.netlify.app
-
----
-
-### Rotas Protegidas (JWT + Middleware)
-
+## Rotas Protegidas (JWT + Middleware)
 Todas essas rotas estão dentro do middleware `auth:api`:
 
+```bash
 | Método  | URL                          | Descrição                    |
-|---------|-----------------------------|-------------------------------|
+|---------|------------------------------|------------------------------|
+| POST    | /login                       | Autenticar usuário                                
 | POST    | /usuarios/cadastrar          | Cadastrar novo usuário       |
 | PATCH   | /usuarios/editar/{id}        | Editar usuário existente     |
 | GET     | /usuarios/listar             | Listar todos os usuários     |
 | DELETE  | /usuarios/excluir/{id}       | Excluir usuário             |
 | GET     | /usuarios/buscar/{id}        | Buscar usuário por ID       |
 | POST    | /logout                      | Encerrar sessão do usuário  |
-
+```
 
 --
 
 ## 🔹 Middleware
-
 O middleware `auth:api` garante que apenas usuários autenticados podem acessar as rotas protegidas.  
 Ele verifica o **JWT** enviado no header da requisição.
 
 Exemplo:
 
-```php
+```bash
 Route::middleware(['auth:api'])->prefix('usuarios')
     ->group(function () {
         Route::post('/cadastrar', [UsuarioController::class, 'cadastrarUsuario']);
@@ -81,7 +74,8 @@ Route::middleware(['auth:api'])->prefix('usuarios')
         Route::delete('/excluir/{id}', [UsuarioController::class, 'excluirUsuario']);
         Route::get('/buscar/{id}', [UsuarioController::class, 'buscarUsuario']);
     });
-### 🔹 Padrão Repository-Service-Controller
+```
+## 🔹 Padrão Repository-Service-Controller
 
 - **Controller**: Recebe requisições e envia respostas HTTP.  
 - **Service**: Contém regras de negócio, valida dados e processa lógica.  
@@ -95,6 +89,18 @@ Route::middleware(['auth:api'])->prefix('usuarios')
 4. Retorna resposta HTTP ao frontend.  
 
 ---
+
+## Uso de Permissões (Policies) no Laravel
+
+Este projeto utiliza **Policies** para controlar permissões de usuários.  
+As regras estão em `App\Policies\UsuarioPolicy`.
+
+## Regras de Permissão
+
+- **create** → Apenas usuários com perfil **ADMIN** podem criar usuários.
+- **update** → Usuário **ADMIN** ou o próprio usuário podem atualizar seus dados.
+- **delete** → Apenas usuários com perfil **ADMIN** podem excluir usuários.
+
 
 # 📌 API Gerenciador de Usuários
 

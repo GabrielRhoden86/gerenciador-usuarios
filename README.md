@@ -84,8 +84,7 @@ php artisan optimize
 
 ### Login
 **Endpoint:**  
-`POST http://localhost:8000/api/login`
-
+POST   https://gerenciador-usuarios.onrender.com/api/login
 **Body (JSON):**
 ```bash
 {
@@ -93,15 +92,28 @@ php artisan optimize
   "password": "senha123"
 }
 ```
+
+📌 Após fazer o login será gerado o token ue deve ser inserido no header de cada requisção abaixo
+ex: Autorization: bearer seu_token
+
+**Listar todos Usuários**
+GET https://gerenciador-usuarios.onrender.com/api/usuarios/listar
+```bash
+Autorization: bearer seu_token
+```
+
 **Cadastrar Usuário**
 POST https://gerenciador-usuarios.onrender.com/api/usuarios/cadastrar
 ```bash
 {
   "nome": "João da Silva",
   "email": "joao@exemplo.com",
-  "password": "senha123"
+  "password": "senha123",
+  "role_id":2
 }
 ```
+obs: 1 = administrador e 2 = usuário padrão 
+
 **Editar Usuário**
 PATCH https://gerenciador-usuarios.onrender.com/api/usuarios/editar/{id}
 ```bash
