@@ -14,6 +14,7 @@ O projeto segue a arquitetura **Repository-Service-Controller**, separando respo
 
 Exemplo Repository Pattern:
 
+```bash
 app/
 ├─ Http/
 │ ├─ Controllers/
@@ -23,8 +24,7 @@ app/
 │ └─ UsuarioService.php
 ├─ Repositories/
 │ └─ UsuarioRepository.php
-
----
+```
 
 ## 🔹 Segurança
 O sistema utiliza **JWT (JSON Web Tokens)** para autenticação:
@@ -37,7 +37,7 @@ O sistema utiliza **JWT (JSON Web Tokens)** para autenticação:
 ## 🔹 Rota de autenticação
 
 ```bash
-| Método | URL                         | Descrição               |
+| Método | URL                         | Descrição             |
 |--------|----------------------------|------------------------|
 | POST   | /login                     | Faz login no sistema   |
 ```
@@ -47,14 +47,13 @@ Todas essas rotas estão dentro do middleware `auth:api`:
 
 ```bash
 | Método  | URL                          | Descrição                    |
-|---------|------------------------------|------------------------------|
-| POST    | /login                       | Autenticar usuário                                
+|---------|------------------------------|------------------------------|                      
 | POST    | /usuarios/cadastrar          | Cadastrar novo usuário       |
 | PATCH   | /usuarios/editar/{id}        | Editar usuário existente     |
 | GET     | /usuarios/listar             | Listar todos os usuários     |
-| DELETE  | /usuarios/excluir/{id}       | Excluir usuário             |
-| GET     | /usuarios/buscar/{id}        | Buscar usuário por ID       |
-| POST    | /logout                      | Encerrar sessão do usuário  |
+| DELETE  | /usuarios/excluir/{id}       | Excluir usuário              |
+| GET     | /usuarios/buscar/{id}        | Buscar usuário por ID        |
+| POST    | /logout                      | Encerrar sessão do usuário   |
 ```
 
 --
