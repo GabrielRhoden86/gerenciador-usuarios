@@ -28,11 +28,10 @@ class UsuarioController extends Controller
                 'message' => $cadastro['message'],
                 'data' => $cadastro['data']
             ]);
-        } catch (Throwable $e) {
-            $status = $e->getCode() > 0 ? $e->getCode() : 500;
-            return response()->json([
-                'message' => $e->getMessage()
-            ], status: $status);
+         } catch (Throwable $e) {
+            return response()->json(
+            ['message' => $e->getMessage()],
+         $e->getCode());
         }
     }
     public function editarUsuario(UpdateUsuarioRequest $request, int $id)
@@ -47,23 +46,23 @@ class UsuarioController extends Controller
             ]);
         } catch (Throwable $e) {
             return response()->json(['message' => $e->getMessage()],
-         $e->getCode() ?: 500);
+         $e->getCode());
         }
     }
     public function listarUsuarios(FindUsuarioRequest $request)
     {
         try {
             $dadosValidados = $request->validated();
-            $perPage = $request->query('per_page', 10);
+            $perPage = $request->query('per_page', default: 10);
             $usuarios = $this->usuarioService->listarUsuarios($dadosValidados, $perPage);
 
-              return response()->json([
+            return response()->json([
                 'message' => $usuarios['message'],
                 'data' => $usuarios['data']
             ]);
           } catch (Throwable $e) {
             return response()->json(['message' => $e->getMessage()],
-         $e->getCode() ?: 500);
+         $e->getCode());
         }
     }
     public function excluirUsuario(DeleteUsuarioRequest $request, int $id)
@@ -79,7 +78,7 @@ class UsuarioController extends Controller
          } catch (Throwable $e) {
             return response()->json(
             ['message' => $e->getMessage()],
-         $e->getCode() ?: 500);
+         $e->getCode());
         }
     }
     public function buscarUsuario(int $id)
@@ -92,7 +91,7 @@ class UsuarioController extends Controller
             ]);
             } catch (Throwable $e) {
             return response()->json(['message' => $e->getMessage()],
-         $e->getCode() ?: 500);
+         $e->getCode());
         }
     }
 }

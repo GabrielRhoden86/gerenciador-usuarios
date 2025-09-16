@@ -18,23 +18,27 @@ class UsuarioRepository
         $usuario->update($data);
         return $usuario;
     }
-
     public function findAll(array $filtros = [], int $perPage = 10): LengthAwarePaginator
     {
-        return User::query()
-            ->select('id','name', 'email','role_id','created_at','updated_at')
-            ->when(!empty($filtros['name']), fn($query) =>
-                $query->where('name', 'like', '%' . $filtros['name'] . '%'))
+        $query = User::query()
+            ->select('id', 'name', 'email', 'role_id', 'created_at', 'updated_at');
 
-            ->when(!empty($filtros['email']), fn($query) =>
-                $query->where('email', $filtros['email']))
+        if (!empty($filtros['name'])) {
+            $query->where('name', 'like', '%' . $filtros['name'] . '%');
+        }
 
-             ->when(!empty($filtros['role_id']), fn($query) =>
-                $query->where('role_id', $filtros['role_id']))
-            ->paginate($perPage);
+        if (!empty($filtros['email'])) {
+            $query->where('email', 'like', '%' . $filtros['email'] . '%');
+        }
+
+        if (!empty($filtros['role_id'])) {
+            $query->where('role_id', $filtros['role_id']);
+        }
+
+        return $query->paginate($perPage);
     }
 
-    public function delete(int $id)
+    public function delete(int $id): bool|null
     {
        $user = User::findOrFail($id);
        return $user->delete();
