@@ -25,8 +25,8 @@ class UsuarioController extends Controller
             $dadosValidados = $request->validated();
             $cadastro = $this->usuarioService->cadastrarUsuario($dadosValidados);
             return response()->json([
-                'message' => $cadastro['message'],
-                'data' => $cadastro['data']
+                'message' => 'Cadastro realizado com sucesso!',
+                'data' => $cadastro
             ]);
          } catch (Throwable $e) {
             return response()->json(
@@ -41,15 +41,15 @@ class UsuarioController extends Controller
             $atualizacao = $this->usuarioService->editarUsuario($dadosValidados, $id);
 
             return response()->json([
-                'message' => $atualizacao['message'],
-                'data' => $atualizacao['data']
+                'message' => 'Dados atualizados com sucesso!',
+                'data' => $atualizacao
             ]);
         } catch (Throwable $e) {
             return response()->json(['message' => $e->getMessage()],
          $e->getCode());
         }
     }
-    public function listarUsuarios(FindUsuarioRequest $request)
+    public function index(FindUsuarioRequest $request)
     {
         try {
             $dadosValidados = $request->validated();
@@ -57,8 +57,9 @@ class UsuarioController extends Controller
             $usuarios = $this->usuarioService->listarUsuarios($dadosValidados, $perPage);
 
             return response()->json([
-                'message' => $usuarios['message'],
-                'data' => $usuarios['data']
+                'message' => 'Dados listados com sucesso!',
+                'data' => $usuarios['data'],
+                'todos'   => $usuarios['todos'],
             ]);
           } catch (Throwable $e) {
             return response()->json(['message' => $e->getMessage()],
@@ -72,8 +73,8 @@ class UsuarioController extends Controller
             $usuarioExcluido = $this->usuarioService->excluirUsuario($dadosValidados, $id);
 
           return response()->json([
-                'message' => $usuarioExcluido['message'],
-                'data' => $usuarioExcluido['data']
+                'message' => 'Usuário excluido com sucesso!',
+                'data' => $usuarioExcluido
             ]);
          } catch (Throwable $e) {
             return response()->json(
@@ -86,12 +87,12 @@ class UsuarioController extends Controller
         try {
             $usuario = $this->usuarioService->buscarUsuario($id);
             return response()->json([
-                'message' => $usuario['message'],
-                'data' => $usuario['data']
+                'message' => 'Dados listados com sucesso!',
+                'data' => $usuario
             ]);
-            } catch (Throwable $e) {
-            return response()->json(['message' => $e->getMessage()],
-         $e->getCode());
+        } catch (Throwable $e) {
+            return response()->json(
+            ['message' => $e->getMessage()],$e->getCode());
         }
     }
 }

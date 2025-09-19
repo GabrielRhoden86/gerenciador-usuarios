@@ -21,103 +21,68 @@ class UsuarioService
         $this->usuarioRepository = $usuarioRepository;
         $this->notificacaoService = $notificacaoService;
     }
-
     public function cadastrarUsuario(array $dados)
     {
-        try {
-            if (Gate::denies('create', Auth::user())) {
-                throw new \Exception('Somente Administradores podem cadastrar usuários',
-                403);
-            }
+        if (Gate::denies('create', Auth::user())) {
+             throw new \Exception('Somente Administradores podem cadastrar usuários',
+              403);
+        }
 
-            if (empty($dados['password'])) {
-                $provisionalPassword = Str::random(8);
-                $this->notificacaoService->notificarUsuarioSenhaProvisoria($dados['email'], $provisionalPassword);
-                $dados['password'] = $provisionalPassword;
-            }
+        if (empty($dados['password'])) {
+            $provisionalPassword = Str::random(8);
+            $this->notificacaoService->notificarUsuarioSenhaProvisoria($dados['email'], $provisionalPassword);
+            $dados['password'] = $provisionalPassword;
+        }
 
             $dados['password'] = Hash::make($dados['password']);
             $usuario = $this->usuarioRepository->create($dados);
 
-            return [
-                'message' => 'Cadastro realizado com sucesso!',
-                'data'   => $usuario
-            ];
-        } catch (Throwable $e) {
-            Log::error("Erro ao cadastrar usuário: " . $e->getMessage());
-            throw $e;
-        }
+            return $usuario;
     }
     public function editarUsuario(array $dados, int $id)
     {
-        try {
-            $usuarioEditado = User::findOrFail($id);
+        $usuario = User::findOrFail($id);
 
-            if (Gate::denies('update', $usuarioEditado)) {
-                throw new \Exception('Somente Administradores podem alterar perfis de outros usuários.',
-                403);
-            }
-
-            if (isset($dados['password']) && !empty($dados['password'])) {
-                $dados['password'] = Hash::make($dados['password']);
-            }
-
-            $usuarioAtualizado = $this->usuarioRepository->update($dados, $id);
-            return [
-                'message' => 'Dados atualizados com sucesso!',
-                'data'   => $usuarioAtualizado
-            ];
-
-        } catch (Throwable $e) {
-            Log::error("Erro ao atualizar usuário" . $e->getMessage());
-            throw $e;
+        if (Gate::denies('update', $usuario)) {
+            throw new \Exception('Somente Administradores podem alterar perfis de outros usuários.', 403);
         }
+
+        if (!empty($dados['password'])) {
+            $dados['password'] = Hash::make($dados['password']);
+        }
+
+        return $this->usuarioRepository->update($dados, $id);
     }
+
     public function listarUsuarios(array $filtros = [], int $perPage = 10)
     {
-        try {
-            $usuarios =  $this->usuarioRepository->findAll($filtros, $perPage);
-             return [
-                'message' => 'Dados listados com sucesso!',
-                'data'   => $usuarios
-            ];
-
-        } catch (Throwable $e) {
-            Log::error('Erro ao listar usuários' . $e->getMessage());
-            throw $e;
-        }
+        $usuarios =  $this->usuarioRepository->findAll($filtros, $perPage);
+          return [
+           'data'    => $usuarios['paginacao'],
+           'todos'   => $usuarios['todos'],
+        ];
     }
     public function excluirUsuario($request, int $id)
     {
-        try {
-            $idUserExcluido = User::findOrFail($id);
+        $usuario = User::findOrFail($id);
 
-            if (Gate::denies('delete', $idUserExcluido)) {
-                throw new \Exception('Somente Administradores podem excluir perfis de outros usuários.',
-                403);
-            }
-            $usuarioExcluido = $this->usuarioRepository->delete($id);
-
-             return [
-                'message' => 'Usuário excluido com sucesso!',
-                'data'   => $usuarioExcluido
-            ];
-        } catch (Throwable $e) {
-            Log::error('Erro ao excluir usuário ' . $e->getMessage());
-            throw $e;
+        if (Gate::denies('delete', $usuario)) {
+            throw new \Exception(
+                'Somente Administradores podem excluir perfis de outros usuários.',
+                403
+            );
         }
+
+        return $this->usuarioRepository->delete($id);
     }
     public function buscarUsuario(int $id)
     {
-        try {
-            $usuario =  $this->usuarioRepository->findById($id);
-               return [
-                'message' => 'Dados listados com sucesso!',
-                'data'   => $usuario
-            ];
-        } catch (Throwable $e) {
-            Log::error('Erro ao buscar usuário id: '.$id.'.' . $e->getMessage());
-            throw $e;
+        $usuario = $this->usuarioRepository->findById($id);
+
+        if (!$usuario) {
+            throw new \Exception('Usuário não encontrado', 404);
         }
+
+        return $usuario;
     }
 }

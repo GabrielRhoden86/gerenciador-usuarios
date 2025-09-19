@@ -18,7 +18,7 @@ class UsuarioRepository
         $usuario->update($data);
         return $usuario;
     }
-    public function findAll(array $filtros = [], int $perPage = 10): LengthAwarePaginator
+    public function findAll(array $filtros = [], int $perPage = 10): array
     {
         $query = User::query()
             ->select('id', 'name', 'email', 'role_id', 'created_at', 'updated_at');
@@ -35,9 +35,14 @@ class UsuarioRepository
             $query->where('role_id', $filtros['role_id']);
         }
 
-        return $query->paginate($perPage);
+        $paginacao = $query->paginate(perPage: $perPage);
+        $todos = User::select('id', 'name')->limit(500)->get();
+        
+        return [
+            'paginacao' => $paginacao,
+            'todos'     => $todos,
+        ];
     }
-
     public function delete(int $id): bool|null
     {
        $user = User::findOrFail($id);
@@ -46,5 +51,10 @@ class UsuarioRepository
     public function findById($id): User
     {
         return User::findOrFail($id);
+    }
+
+    public function findByEmail(string $email)
+    {
+        return User::where('email', $email)->first();
     }
 }
