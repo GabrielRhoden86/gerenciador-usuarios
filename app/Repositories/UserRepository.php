@@ -3,22 +3,25 @@
 namespace App\Repositories;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use App\Models\User;
+use App\Repositories\Contracts\UserRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
-
-class UsuarioRepository
+class UserRepository implements UserRepositoryInterface
 {
     public function create(array $data): User
     {
         return User::create($data);
     }
-
-    public function update( array $data, int $id): User
+    public function updateUser(User $user, array $data): User
     {
-        $usuario = User::findOrFail($id);
-        $usuario->update($data);
-        return $usuario;
+        $user->update($data);
+        return $user;
     }
-    public function findAll(array $filtros = [], int $perPage = 10): array
+    public function delete(User $user): bool
+    {
+       return $user->delete();
+    }
+    public function paginateUsers(array $filtros = [], int $perPage = 10): LengthAwarePaginator
     {
         $query = User::query()
             ->select('id', 'name', 'email', 'role_id', 'created_at', 'updated_at');
@@ -35,26 +38,19 @@ class UsuarioRepository
             $query->where('role_id', $filtros['role_id']);
         }
 
-        $paginacao = $query->paginate(perPage: $perPage);
-        $todos = User::select('id', 'name')->limit(500)->get();
-        
-        return [
-            'paginacao' => $paginacao,
-            'todos'     => $todos,
-        ];
+        return $query->paginate(perPage: $perPage);
     }
-    public function delete(int $id): bool|null
+    public function findAllUsers(): Collection
     {
-       $user = User::findOrFail($id);
-       return $user->delete();
+        return User::query()->select('id', 'name')->get();
     }
-    public function findById($id): User
+    public function findByUser(int $id): User
     {
         return User::findOrFail($id);
     }
-
-    public function findByEmail(string $email)
+    public function findByEmail(string $email): ?User
     {
+        // Se não encontrar, retorna null (conforme o ?User)
         return User::where('email', $email)->first();
     }
 }

@@ -16,14 +16,13 @@ class User extends Authenticatable implements JWTSubject
     protected $table = 'users';
 
     protected $fillable = [
-                'name',
-                'email',
-                'password',
-                'role_id',
-                'created_at',
-                'updated_at'
+        'name',
+        'email',
+        'password',
+        'role_id',
+        'created_at',
+        'updated_at'
     ];
-
 
     protected $hidden = [
         'password',
@@ -34,8 +33,6 @@ class User extends Authenticatable implements JWTSubject
     'email_verified_at' => 'datetime',
     'password' => 'hashed',
     ];
-
-
 
     public function getJWTIdentifier()
     {

@@ -1,7 +1,6 @@
 <?php
 namespace App\Policies;
 use App\Enums\PerfilUsuario;
-
 use App\Models\User;
 
 class UsuarioPolicy
@@ -16,8 +15,7 @@ class UsuarioPolicy
         return $user->role_id === PerfilUsuario::ADMIN->value || $user->id === $model->id;
     }
 
-
-    public function delete(User $user, User $model): bool
+    public function delete(User $user): bool
     {
         return $user->role_id === PerfilUsuario::ADMIN->value;
     }

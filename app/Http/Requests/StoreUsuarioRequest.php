@@ -21,6 +21,7 @@ class StoreUsuarioRequest extends FormRequest
             'name' => 'required|string|max:255',
             'role_id' => 'required|integer|in:1,2',
             'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'nullable|string|min:6',
         ];
     }
 
@@ -33,6 +34,7 @@ class StoreUsuarioRequest extends FormRequest
                 'email.unique'      => 'O e-mail informado já está em uso.',
                 'role_id.required'  => 'O campo perfil é obrigatório.',
                 'role_id.in'        => 'O perfil selecionado deve ser admin ou user.',
+                'password.min'      => 'A senha deve ter no mínimo 6 caracteres.',
             ];
         }
 

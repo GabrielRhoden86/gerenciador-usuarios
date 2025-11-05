@@ -6,16 +6,16 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class StatusAlteradoMail extends Mailable
+class TemporaryPasswordMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $provisionalPassword;
+    public $temporaryPassword;
     public $userEmail;
 
-    public function __construct(string $provisionalPassword, string $userEmail)
+    public function __construct(string $temporaryPassword, string $userEmail)
     {
-        $this->provisionalPassword = $provisionalPassword;
+        $this->temporaryPassword = $temporaryPassword;
         $this->userEmail = $userEmail;
     }
 

@@ -11,25 +11,18 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SolicitarResetSenha
+class RequestPasswordReset
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $usuario;
+    public $user;
     public $token;
-    /**
-     * Create a new event instance.
-     */
-    public function __construct(User $usuario, string $token)
+
+    public function __construct(User $user, string $token)
     {
-        $this->usuario = $usuario;
+        $this->user = $user;
         $this->token = $token;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
     public function broadcastOn(): array
     {
         return [
