@@ -39,8 +39,12 @@ class User extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
+    //enviando dados via payload jwt
     public function getJWTCustomClaims()
     {
-        return [];
+           return [
+            'user_id' => $this->id,
+            'role_id' => $this->role_id, // <-- Isso adiciona a permissão ao payload
+        ];
     }
 }

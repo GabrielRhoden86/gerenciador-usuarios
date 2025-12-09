@@ -1,0 +1,22 @@
+<?php
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class EnsureEmailIsVerified
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        $user = $request->user();
+
+       if (!$user || !$user->email_verified_at) {
+         return response()->json([
+            'message' => 'Seu cadastro não foi confirmado via email'
+         ], 403);
+        }
+
+        return $next($request);
+    }
+}

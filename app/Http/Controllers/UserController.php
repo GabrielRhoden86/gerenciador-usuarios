@@ -16,19 +16,18 @@ use Throwable;
 class UserController extends Controller
 {
     use AuthorizesRequests;
-    protected $userService;
+    protected $service;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $service)
     {
-        $this->userService = $userService;
+        $this->service = $service;
     }
     public function store(StoreUsuarioRequest $request)
     {
         try {
-
             $this->authorize('create', User::class);
             $validateData = $request->validated();
-            $cadastro = $this->userService->createUser($validateData);
+            $cadastro = $this->service->createUser($validateData);
             return response()->json([
                 'message' => 'Cadastro realizado com sucesso!',
                 'data' => $cadastro
@@ -44,7 +43,7 @@ class UserController extends Controller
         try {
             $this->authorize('update', User::class);
             $validateData = $request->validated();
-            $user = $this->userService->editUser($validateData, $id);
+            $user = $this->service->editUser($validateData, $id);
 
             return response()->json([
                 'message' => 'Dados atualizados com sucesso!',
@@ -61,7 +60,7 @@ class UserController extends Controller
         try {
             $validateData = $request->validated();
             $perPage = $request->query('per_page', default: 10);
-            $users = $this->userService->getAllUsersList($validateData, $perPage);
+            $users = $this->service->getAllUsersList($validateData, $perPage);
 
             return response()->json([
                 'message' => 'Dados listados com sucesso!',
@@ -76,7 +75,7 @@ class UserController extends Controller
     public function listAll()
     {
           try {
-            $users = $this->userService->getAllUsers();
+            $users = $this->service->getAllUsers();
             return response()->json([
                 'message' => 'Dados listados com sucesso!',
                 'data' => $users,
@@ -91,7 +90,7 @@ class UserController extends Controller
     {
         try {
         $this->authorize('delete', User::class);
-          $user = $this->userService->deleteUser( $id);
+          $user = $this->service->deleteUser( $id);
           return response()->json([
                 'message' => 'Usuário excluido com sucesso!',
                 'data' => $user
@@ -105,7 +104,7 @@ class UserController extends Controller
     public function show(int $id)
     {
         try {
-            $user = $this->userService->showUser($id);
+            $user = $this->service->showUser($id);
             return response()->json([
                 'message' => 'Dados listados com sucesso!',
                 'data' => $user

@@ -4,14 +4,17 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PasswordResetController;
+use \App\Http\Middleware\EnsureEmailIsVerified;
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/reset-password-email', [PasswordResetController::class, 'sendLink']);
-Route::post('/reset-password', [PasswordResetController::class, 'reset']);
+Route::post('/reset-password', action: [PasswordResetController::class, 'reset']);
+Route::post('/email-verification', [AuthController::class, 'emailVerification'])->middleware('auth:api');
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api', EnsureEmailIsVerified::class])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::get('/me', action: [AuthController::class, 'me']);
     Route::prefix('usuarios')->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::get('/todos', [UserController::class, 'listAll']);
@@ -21,3 +24,4 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/excluir/{id}', [UserController::class, 'destroy']);
     });
 });
+
