@@ -13,87 +13,81 @@ use Illuminate\Support\Facades\Cookie;
 class AuthController extends Controller
 {
 
-public function attachJwtCookie($response, $token, $minutesLifetime)
-{
-    // Configuração para desenvolvimento local (HTTP)
-    $secure = false; // Mude para true em produção (HTTPS)
-    $sameSite = 'None';
-    // Nota: 'None' pode ser representado como null ou 'none' dependendo da versão do Laravel/PHP
-    return $response->cookie(
-        'access_token',      // Nome
-        $token,             // Valor
-        $minutesLifetime,   // Duração (MINUTOS) <-- NOVO ARGUMENTO AQUI
-        '/',                 // Path
-        null,                // Domain
-        $secure,             // Secure (false para HTTP local)
-        true,                // HttpOnly
-        false,               // Raw
-        $sameSite            // SameSite (None)
-    );
-}
-
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required'
+            ]);
 
-        $credentials = $request->only('email', 'password');
+            $credentials = $request->only('email', 'password');
 
-         if (!$token = auth('api')->attempt($credentials)) {
-         return response()->json(['error' => 'Credenciais inválidas'], 401);
+            if (!$token = auth('api')->attempt($credentials)) {
+                return response()->json(['error' => 'Credenciais inválidas'], 401);
+            }
+
+            return response()->json([
+                'message' => 'Login bem-sucedido.',
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth('api')->factory()->getTTL() * 60
+            ], 200);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => 'Erro interno ao processar login.',
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-    $expiresInSeconds = auth('api')->factory()->getTTL() * 60; // Tempo em segundos
-    $expiresInMinutes = $expiresInSeconds / 60; // Tempo em minutos
-
-    $responseJson = [
-        'message' => 'Login bem-sucedido.',
-        'expires_in' => $expiresInSeconds,
-    ];
-
-    $response = response()->json($responseJson, 200);
-    // Passe a duração em MINUTOS para a função:
-    return $this->attachJwtCookie($response, $token, $expiresInMinutes);
     }
 
     public function logout()
     {
-        auth('api')->logout();
-        $response = response()->json(['message' => 'Logout bem-sucedido']);
-        $cookie = cookie()->forget('jwt');
-        return $response->cookie($cookie);
+        try {
+            auth('api')->logout();
+            return response()->json(['message' => 'Logout bem-sucedido']);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => 'Erro ao realizar logout'], 500);
+        }
     }
 
-    // Endpoint para verificar o status do usuário ou "refrescar" o token automaticamente
-    public function me()
+    public function profile()
     {
-        if (auth('api')->user()) {
-             $user = auth('api')->user();
-             return response()->json([
-                'id' => $user->id,
-                'name' => $user->name,
-                'permissao' => $user->role_id,
-            ]);
+        try {
+            $user = auth('api')->user();
+
+            if ($user) {
+                return response()->json([
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'permissao' => $user->role_id,
+                ], 200);
+            }
+
+            return response()->json(['error' => 'Não autenticado'], 401);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => 'Erro ao recuperar perfil',
+                'details' => $e->getMessage()
+            ], 500);
         }
-        return response()->json(['error' => 'Não autenticado'], 401);
     }
 
     public function refresh()
     {
-        // O pacote JWT do Tymon pode refrescar o token a partir do token existente no cookie.
         try {
             $newToken = auth('api')->refresh();
-            $response = response()->json(['message' => 'Token atualizado com sucesso'], 200);
-            // Anexamos o novo token como um novo cookie HttpOnly
-            return $this->attachJwtCookie($response, $newToken);
-
+            return response()->json([
+                'message' => 'Token atualizado com sucesso',
+                'access_token' => $newToken,
+                'expires_in' => auth('api')->factory()->getTTL() * 60
+            ], 200);
         } catch (JWTException $e) {
             return response()->json(['error' => 'Não foi possível atualizar o token.'], 401);
         }
     }
-
     public function emailVerification(Request $request)
     {
         $authUser = Auth::user();

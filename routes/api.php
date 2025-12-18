@@ -14,7 +14,7 @@ Route::post('/email-verification', [AuthController::class, 'emailVerification'])
 Route::middleware(['auth:api', EnsureEmailIsVerified::class])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/me', action: [AuthController::class, 'me']);
+    Route::get('/profile', action: [AuthController::class, 'profile']);
     Route::prefix('usuarios')->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::get('/todos', [UserController::class, 'listAll']);

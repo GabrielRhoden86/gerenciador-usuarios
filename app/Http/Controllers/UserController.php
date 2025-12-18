@@ -34,7 +34,7 @@ class UserController extends Controller
             ]);
          } catch (Throwable $e) {
             return response()->json(
-            ['error' => $e->getMessage()]
+            ['error' => $e->getMessage()],500
          );
         }
     }
@@ -51,7 +51,7 @@ class UserController extends Controller
             ]);
         } catch (Throwable $e) {
             return response()->json(
-             ['error' => $e->getMessage()]
+             ['error' => $e->getMessage()],500
          );
         }
     }
@@ -72,20 +72,20 @@ class UserController extends Controller
          500);
         }
     }
-    public function listAll()
-    {
-          try {
-            $users = $this->service->getAllUsers();
-            return response()->json([
-                'message' => 'Dados listados com sucesso!',
-                'data' => $users,
-            ]);
-          } catch (Throwable $e) {
-            return response()->json(
-            ['error' => $e->getMessage()],
-         );
+        public function listAll()
+        {
+            try {
+                $users = $this->service->getAllUsers();
+                return response()->json([
+                    'message' => 'Dados listados com sucesso!',
+                    'data' => $users,
+                ]);
+            } catch (Throwable $e) {
+                return response()->json(
+                ['error' => $e->getMessage()],500
+            );
+            }
         }
-    }
     public function destroy(int $id)
     {
         try {
@@ -97,7 +97,7 @@ class UserController extends Controller
             ]);
          } catch (Throwable $e) {
             return response()->json(
-            ['error' => $e->getMessage()],
+            ['error' => $e->getMessage()],500
          );
         }
     }
