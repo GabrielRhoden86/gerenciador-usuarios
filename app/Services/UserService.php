@@ -50,6 +50,6 @@ class UserService
     }
     public function showUser(int $id)
     {
-      return  $this->userRepository->findByUser($id);
+       return  $this->userRepository->findByUser($id);
     }
 }

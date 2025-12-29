@@ -2,77 +2,52 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cookie;
-
 
 class AuthController extends Controller
 {
-
     public function login(Request $request)
     {
-        try {
-            $request->validate([
-                'email' => 'required|email',
-                'password' => 'required'
-            ]);
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-            $credentials = $request->only('email', 'password');
-
-            if (!$token = auth('api')->attempt($credentials)) {
-                return response()->json(['error' => 'Credenciais inválidas'], 401);
-            }
-
-            return response()->json([
-                'message' => 'Login bem-sucedido.',
-                'access_token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => auth('api')->factory()->getTTL() * 60
-            ], 200);
-
-        } catch (\Throwable $e) {
-            return response()->json([
-                'error' => 'Erro interno ao processar login.',
-                'message' => $e->getMessage()
-            ], 500);
+        if (!$token = auth('api')->attempt($credentials)) {
+            return response()->json(['message' => 'Credenciais inválidas'], 401);
         }
-    }
 
+        return response()->json([
+            'message' => 'Login bem-sucedido.',
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth('api')->factory()->getTTL() * 60
+        ], 200);
+    }
     public function logout()
     {
         try {
             auth('api')->logout();
             return response()->json(['message' => 'Logout bem-sucedido']);
         } catch (\Throwable $e) {
-            return response()->json(['error' => 'Erro ao realizar logout'], 500);
+            return response()->json(['error' => 'Erro ao realizar logout',
+             $e->getMessage()], 500);
         }
     }
-
     public function profile()
     {
-        try {
-            $user = auth('api')->user();
-
-            if ($user) {
-                return response()->json([
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'permissao' => $user->role_id,
-                ], 200);
-            }
-
-            return response()->json(['error' => 'Não autenticado'], 401);
-
-        } catch (\Throwable $e) {
+        $user = auth('api')->user();
+        if ($user) {
             return response()->json([
-                'error' => 'Erro ao recuperar perfil',
-                'details' => $e->getMessage()
-            ], 500);
+                'id' => $user->id,
+                'name' => $user->name,
+                'permissao' => $user->role_id,
+            ], 200);
         }
+
+        return response()->json(['error' => 'Não autenticado'], 401);
     }
 
     public function refresh()

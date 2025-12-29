@@ -25,33 +25,36 @@ class UserController extends Controller
     public function store(StoreUsuarioRequest $request)
     {
         try {
-            $this->authorize('create', User::class);
             $validateData = $request->validated();
-            $cadastro = $this->service->createUser($validateData);
+            $data = $this->service->createUser($validateData);
             return response()->json([
                 'message' => 'Cadastro realizado com sucesso!',
-                'data' => $cadastro
+                'data' => $data
             ]);
          } catch (Throwable $e) {
             return response()->json(
-            ['error' => $e->getMessage()],500
+            ['error' => "Falha ao cadastrar usuário"],
+            500
          );
         }
     }
     public function update(UpdateUsuarioRequest $request, int $id)
     {
+        $userEdited = User::findOrFail($id);
+        $this->authorize('update',$userEdited);
+
         try {
-            $this->authorize('update', User::class);
             $validateData = $request->validated();
-            $user = $this->service->editUser($validateData, $id);
+            $data = $this->service->editUser($validateData, $id);
 
             return response()->json([
                 'message' => 'Dados atualizados com sucesso!',
-                'data' => $user
+                'data' => $data
             ]);
         } catch (Throwable $e) {
             return response()->json(
-             ['error' => $e->getMessage()],500
+             ['error' => "Falha a atualizar usuário"],
+             500
          );
         }
     }
@@ -68,50 +71,55 @@ class UserController extends Controller
             ]);
           } catch (Throwable $e) {
             return response()->json(
-            ['error' => $e->getMessage()],
+            ['error' => "Falha ao listar usuários"],
          500);
         }
     }
-        public function listAll()
-        {
-            try {
-                $users = $this->service->getAllUsers();
-                return response()->json([
-                    'message' => 'Dados listados com sucesso!',
-                    'data' => $users,
-                ]);
-            } catch (Throwable $e) {
-                return response()->json(
-                ['error' => $e->getMessage()],500
-            );
-            }
-        }
-    public function destroy(int $id)
+    public function listAll()
     {
         try {
-        $this->authorize('delete', User::class);
-          $user = $this->service->deleteUser( $id);
+            $data = $this->service->getAllUsers();
+            return response()->json([
+                'message' => 'Dados listados com sucesso!',
+                'data' => $data,
+            ]);
+            } catch (Throwable $e) {
+                return response()->json(
+               ['error' => "Falha ao listar usuários"],
+               500
+            );
+        }
+    }
+    public function destroy(int $id)
+    {
+      $userDeleted = User::findOrFail(id: $id);
+      $this->authorize('delete', $userDeleted);
+      try {
+          $data = $this->service->deleteUser( $id);
           return response()->json([
                 'message' => 'Usuário excluido com sucesso!',
-                'data' => $user
+                'data' => $data
             ]);
          } catch (Throwable $e) {
             return response()->json(
-            ['error' => $e->getMessage()],500
+            ['error' => "Falha ao excluir usuário"],
+            500
          );
         }
     }
     public function show(int $id)
     {
+        $user = User::findOrFail($id);
         try {
-            $user = $this->service->showUser($id);
+            $data = $this->service->showUser($user->id);
             return response()->json([
                 'message' => 'Dados listados com sucesso!',
-                'data' => $user
+                'data' => $data
             ]);
         } catch (Throwable $e) {
             return response()->json(
-            ['error' => $e->getMessage()],500);
+            ['error' => "Falha ao listar dados"],
+            500);
         }
     }
 }
